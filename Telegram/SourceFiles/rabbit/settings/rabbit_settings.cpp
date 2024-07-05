@@ -246,6 +246,31 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "general_roundness", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
+	//     Sidebar
+	{ "sidebar_create_group", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_create_channel", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_stories", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_bots", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_contacts", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_calls", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_saved_messages", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
+	{ "sidebar_night_mode", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
 };
 
 using OldOptionKey = QString;

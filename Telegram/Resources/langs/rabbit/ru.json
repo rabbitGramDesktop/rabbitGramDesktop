@@ -4,12 +4,14 @@
     "rtg_settings_general": "Основные",
     "rtg_general_streamer_mode": "Режим стримера",
     "rtg_general_auto_hide_notifications": "Скрывать уведомления автоматически",
-    "rtg_settings_appearance": "Оформление",
+    "rtg_settings_appearance": "Внешний вид",
     "rtg_settings_userpic_rounding": "Скругление фото профиля: {radius}",
     "rtg_general_roundness": "Единое закругление",
+    "rtg_sidebar_editor": "Редактор бокового меню",
     "rtg_settings_chats": "Чаты",
     "rtg_nothing_here": "Здесь пока ничего нет...",
     "rtg_phone_hidden": "Скрыто",
     "rtg_open": "Открыть rabbitGram",
-    "rtg_close": "Закрыть rabbitGram"
+    "rtg_close": "Закрыть rabbitGram",
+    "last_string": null
 }
