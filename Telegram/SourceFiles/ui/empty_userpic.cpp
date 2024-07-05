@@ -7,6 +7,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/empty_userpic.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
+#include "ui/emoji_config.h"
 #include "ui/chat/chat_style.h"
 #include "ui/effects/animation_value.h"
 #include "ui/emoji_config.h"
@@ -324,7 +327,9 @@ void EmptyUserpic::paintCircle(
 		int outerWidth,
 		int size) const {
 	paint(p, x, y, outerWidth, size, [&] {
-		p.drawEllipse(x, y, size, size);
+		auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+		p.drawRoundedRect(x, y, size, size, 
+			radius, radius);
 	});
 }
 
@@ -336,7 +341,9 @@ void EmptyUserpic::paintRounded(
 		int size,
 		int radius) const {
 	paint(p, x, y, outerWidth, size, [&] {
-		p.drawRoundedRect(x, y, size, size, radius, radius);
+		auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+		p.drawRoundedRect(x, y, size, size, 
+			radius, radius);
 	});
 }
 
@@ -347,7 +354,9 @@ void EmptyUserpic::paintSquare(
 		int outerWidth,
 		int size) const {
 	paint(p, x, y, outerWidth, size, [&] {
-		p.fillRect(x, y, size, size, p.brush());
+		auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+		p.drawRoundedRect(x, y, size, size, 
+			radius, radius);
 	});
 }
 
@@ -379,7 +388,9 @@ void EmptyUserpic::PaintSavedMessages(
 	PainterHighQualityEnabler hq(p);
 	p.setBrush(std::move(bg));
 	p.setPen(Qt::NoPen);
-	p.drawEllipse(x, y, size, size);
+	auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+	p.drawRoundedRect(x, y, size, size, 
+		radius, radius);
 
 	PaintSavedMessagesInner(p, x, y, size, fg);
 }
@@ -418,7 +429,9 @@ void EmptyUserpic::PaintRepliesMessages(
 	PainterHighQualityEnabler hq(p);
 	p.setBrush(bg);
 	p.setPen(Qt::NoPen);
-	p.drawEllipse(x, y, size, size);
+	auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+	p.drawRoundedRect(x, y, size, size, 
+		radius, radius);
 
 	PaintRepliesMessagesInner(p, x, y, size, fg);
 }

@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/userpic_view.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/empty_userpic.h"
 #include "ui/image/image_prepare.h"
 
@@ -43,20 +45,20 @@ void ValidateUserpicCache(
 	view.forum = forumValue;
 	view.paletteVersion = version;
 
+	auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+	if (forum && !RabbitSettings::JsonSettings::GetBool("general_roundness")) radius *= Ui::ForumUserpicRadiusMultiplier();
+
 	if (cloud) {
 		view.cached = cloud->scaled(
 			full,
 			Qt::IgnoreAspectRatio,
 			Qt::SmoothTransformation);
-		if (forum) {
-			view.cached = Images::Round(
-				std::move(view.cached),
-				Images::CornersMask(size
-					* Ui::ForumUserpicRadiusMultiplier()
-					/ style::DevicePixelRatio()));
-		} else {
-			view.cached = Images::Circle(std::move(view.cached));
-		}
+
+		radius /= style::DevicePixelRatio();
+
+		view.cached = Images::Round(
+			std::move(view.cached),
+			Images::CornersMask(radius));
 	} else {
 		if (view.cached.size() != full) {
 			view.cached = QImage(full, QImage::Format_ARGB32_Premultiplied);
@@ -64,17 +66,14 @@ void ValidateUserpicCache(
 		view.cached.fill(Qt::transparent);
 
 		auto p = QPainter(&view.cached);
-		if (forum) {
-			empty->paintRounded(
-				p,
-				0,
-				0,
-				size,
-				size,
-				size * Ui::ForumUserpicRadiusMultiplier());
-		} else {
-			empty->paintCircle(p, 0, 0, size, size);
-		}
+
+		empty->paintRounded(
+			p,
+			0,
+			0,
+			size,
+			size,
+			radius);
 	}
 }
 

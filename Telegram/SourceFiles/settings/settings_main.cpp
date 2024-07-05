@@ -7,6 +7,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_main.h"
 
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings_menu/rabbit_settings_menu.h"
+
 #include "api/api_credits.h"
 #include "core/application.h"
 #include "core/click_handler_types.h"
@@ -388,12 +391,22 @@ void SetupSections(
 			showOther(type);
 		});
 	};
+
+	addSection(
+		rktr("rtg_settings"),
+		Rabbit::Id(),
+		{ &st::menuIconViolence });
+
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
 
 		Ui::AddDivider(container);
 		Ui::AddSkip(container);
 	} else {
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
+
 		addSection(
 			tr::lng_settings_my_account(),
 			Information::Id(),

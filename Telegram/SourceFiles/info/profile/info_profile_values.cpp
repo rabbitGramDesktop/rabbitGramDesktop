@@ -7,6 +7,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "info/profile/info_profile_values.h"
 
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "api/api_chat_participants.h"
 #include "apiwrap.h"
 #include "info/profile/info_profile_phone_menu.h"
@@ -127,7 +130,9 @@ rpl::producer<TextWithEntities> PhoneValue(not_null<UserData*> user) {
 			user,
 			UpdateFlag::PhoneNumber) | rpl::to_empty
 	) | rpl::map([=] {
-		return Ui::FormatPhone(user->phone());
+		return (RabbitSettings::JsonSettings::GetBool("streamer_mode") && user->isSelf())
+				? ktr("rtg_phone_hidden")
+				: Ui::FormatPhone(user->phone());
 	}) | Ui::Text::ToWithEntities();
 }
 

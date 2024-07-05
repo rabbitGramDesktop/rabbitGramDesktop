@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "window/notifications_manager_default.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "platform/platform_notifications_manager.h"
 #include "platform/platform_specific.h"
 #include "core/application.h"
@@ -47,6 +49,8 @@ namespace Window {
 namespace Notifications {
 namespace Default {
 namespace {
+
+auto kAutoHideInterval = crl::time(10000);
 
 [[nodiscard]] QPoint notificationStartPosition() {
 	const auto corner = Core::App().settings().notificationsCorner();
@@ -723,6 +727,14 @@ bool Notification::checkLastInput(
 		bool hasReplyingNotifications,
 		std::optional<crl::time> lastInputTime) {
 	if (!_waitingForInput) return true;
+
+	if (RabbitSettings::JsonSettings::GetBool("auto_hide_notifications") 
+			&& (crl::now() - _started > kAutoHideInterval) 
+			&& !hasReplyingNotifications) {
+		startHiding();
+		_waitingForInput = false;
+		return true;
+	}
 
 	using namespace Platform::Notifications;
 	const auto waitForUserInput = WaitForInputForCustom()

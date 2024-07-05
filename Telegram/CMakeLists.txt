@@ -1329,6 +1329,18 @@ PRIVATE
     profile/profile_block_widget.h
     profile/profile_cover_drop_area.cpp
     profile/profile_cover_drop_area.h
+    rabbit/lang/rabbit_lang.cpp
+    rabbit/lang/rabbit_lang.h
+    rabbit/settings/rabbit_settings.cpp
+    rabbit/settings/rabbit_settings.h
+    rabbit/settings_menu/sections/rabbit_appearance.cpp
+    rabbit/settings_menu/sections/rabbit_appearance.h
+    rabbit/settings_menu/sections/rabbit_chats.cpp
+    rabbit/settings_menu/sections/rabbit_chats.h
+    rabbit/settings_menu/sections/rabbit_general.cpp
+    rabbit/settings_menu/sections/rabbit_general.h
+    rabbit/settings_menu/rabbit_settings_menu.cpp
+    rabbit/settings_menu/rabbit_settings_menu.h
     settings/business/settings_away_message.cpp
     settings/business/settings_away_message.h
     settings/business/settings_shortcut_messages.cpp
