@@ -395,7 +395,7 @@ void SetupSections(
 	addSection(
 		rktr("rtg_settings"),
 		Rabbit::Id(),
-		{ &st::settingsIconRabbit });
+		{ &st::menuIconRabbit });
 
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
