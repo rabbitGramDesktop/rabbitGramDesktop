@@ -271,6 +271,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "sidebar_night_mode", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = true, }},
+	//   Chats
+	{ "show_seconds", {
+		.type = SettingType::BoolSetting,
+		.defaultValue  = false,  }},
 };
 
 using OldOptionKey = QString;

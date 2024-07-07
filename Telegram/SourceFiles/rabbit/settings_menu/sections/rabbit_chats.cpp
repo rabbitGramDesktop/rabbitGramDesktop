@@ -52,7 +52,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 namespace Settings {
 
     rpl::producer<QString> RabbitChats::title() {
-        return rktr("rtg_nothing_here");
+        return rktr("rtg_settings_chats");
     }
 
     RabbitChats::RabbitChats(
@@ -63,7 +63,22 @@ namespace Settings {
     }
 
     void RabbitChats::SetupChats(not_null<Ui::VerticalLayout *> container) {
-        Ui::AddSubsectionTitle(container, rktr("rtg_nothing_here"));
+        Ui::AddSubsectionTitle(container, rktr("rtg_settings_chats"));
+
+        AddButtonWithIcon(
+			container,
+			rktr("rtg_show_seconds"),
+			st::settingsButton,
+			IconDescriptor{ &st::menuIconReschedule }
+		)->toggleOn(
+			rpl::single(::RabbitSettings::JsonSettings::GetBool("show_seconds"))
+		)->toggledValue(
+		) | rpl::filter([](bool enabled) {
+			return (enabled != ::RabbitSettings::JsonSettings::GetBool("show_seconds"));
+		}) | rpl::start_with_next([](bool enabled) {
+			::RabbitSettings::JsonSettings::Set("show_seconds", enabled);
+			::RabbitSettings::JsonSettings::Write();
+		}, container->lifetime());
     }
 
     void RabbitChats::SetupRabbitChats(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
