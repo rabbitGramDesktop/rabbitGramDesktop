@@ -79,6 +79,8 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Set("show_seconds", enabled);
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
+
+    	SettingsMenuJsonSwitch(rtg_comma_after_mention, comma_after_mention);
     }
 
     void RabbitChats::SetupRabbitChats(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {

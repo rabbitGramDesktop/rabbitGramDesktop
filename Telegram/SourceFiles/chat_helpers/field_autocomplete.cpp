@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "chat_helpers/field_autocomplete.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "data/business/data_shortcut_messages.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
@@ -1267,7 +1269,10 @@ bool FieldAutocomplete::Inner::chooseAtIndex(
 	} else if (!_mrows->empty()) {
 		if (index < _mrows->size()) {
 			const auto user = _mrows->at(index).user;
-			_mentionChosen.fire({ user, PrimaryUsername(user), method });
+			const auto mentionUsername = (RabbitSettings::JsonSettings::GetInt("comma_after_mention") && !user->isBot())
+				? PrimaryUsername(user) + ","
+				: PrimaryUsername(user);			
+			_mentionChosen.fire({ user, mentionUsername, method });
 			return true;
 		}
 	} else if (!_hrows->empty()) {

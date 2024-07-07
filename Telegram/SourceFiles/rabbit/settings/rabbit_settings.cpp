@@ -274,7 +274,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	//   Chats
 	{ "show_seconds", {
 		.type = SettingType::BoolSetting,
-		.defaultValue  = false,  }},
+		.defaultValue  = false, }},
+	{ "comma_after_mention", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 };
 
 using OldOptionKey = QString;

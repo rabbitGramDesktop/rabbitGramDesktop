@@ -15,7 +15,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 namespace Ui {
 
 float64 ForumUserpicRadiusMultiplier() {
-	return 0.3;
+	return 0.5;
 }
 
 bool PeerUserpicLoading(const PeerUserpicView &view) {
