@@ -1343,6 +1343,8 @@ PRIVATE
     rabbit/settings_menu/rabbit_settings_menu.h
     rabbit/ui/settings/icon_picker.cpp
     rabbit/ui/settings/icon_picker.h
+    rabbit/ui/settings/previews.cpp
+    rabbit/ui/settings/previews.h
     rabbit/ui/rabbit_assets.cpp
     rabbit/ui/rabbit_assets.h
     rabbit/utils/windows_utils.cpp
