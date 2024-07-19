@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/gui">
+        <file alias="art/rabbit/angel/app.png">../../art/rabbit/angel/app.png</file>
+        <file alias="art/rabbit/angel/app_preview.png">../../art/rabbit/angel/app_preview.png</file>
+        <file alias="art/rabbit/angel/app_icon.ico">../../art/rabbit/angel/app_icon.ico</file>
+        <file alias="art/rabbit/color/app.png">../../art/rabbit/color/app.png</file>
+        <file alias="art/rabbit/color/app_preview.png">../../art/rabbit/color/app_preview.png</file>
+        <file alias="art/rabbit/color/app_icon.ico">../../art/rabbit/color/app_icon.ico</file>
+        <file alias="art/rabbit/default/app.png">../../art/rabbit/default/app.png</file>
+        <file alias="art/rabbit/default/app_preview.png">../../art/rabbit/default/app_preview.png</file>
+        <file alias="art/rabbit/default/app_icon.ico">../../art/rabbit/default/app_icon.ico</file>
+        <file alias="art/rabbit/impostor/app.png">../../art/rabbit/impostor/app.png</file>
+        <file alias="art/rabbit/impostor/app_preview.png">../../art/rabbit/impostor/app_preview.png</file>
+        <file alias="art/rabbit/impostor/app_icon.ico">../../art/rabbit/impostor/app_icon.ico</file>
+        <file alias="art/rabbit/matrix/app.png">../../art/rabbit/matrix/app.png</file>
+        <file alias="art/rabbit/matrix/app_preview.png">../../art/rabbit/matrix/app_preview.png</file>
+        <file alias="art/rabbit/matrix/app_icon.ico">../../art/rabbit/matrix/app_icon.ico</file>
+        <file alias="art/rabbit/moon/app.png">../../art/rabbit/moon/app.png</file>
+        <file alias="art/rabbit/moon/app_preview.png">../../art/rabbit/moon/app_preview.png</file>
+        <file alias="art/rabbit/moon/app_icon.ico">../../art/rabbit/moon/app_icon.ico</file>
+        <file alias="art/rabbit/old/app.png">../../art/rabbit/old/app.png</file>
+        <file alias="art/rabbit/old/app_preview.png">../../art/rabbit/old/app_preview.png</file>
+        <file alias="art/rabbit/old/app_icon.ico">../../art/rabbit/old/app_icon.ico</file>
+        <file alias="art/rabbit/seasonal/app.png">../../art/rabbit/seasonal/app.png</file>
+        <file alias="art/rabbit/seasonal/app_preview.png">../../art/rabbit/seasonal/app_preview.png</file>
+        <file alias="art/rabbit/seasonal/app_icon.ico">../../art/rabbit/seasonal/app_icon.ico</file>
+        <file alias="art/rabbit/twitch/app.png">../../art/rabbit/twitch/app.png</file>
+        <file alias="art/rabbit/twitch/app_preview.png">../../art/rabbit/twitch/app_preview.png</file>
+        <file alias="art/rabbit/twitch/app_icon.ico">../../art/rabbit/twitch/app_icon.ico</file>
+    </qresource>
+</RCC>

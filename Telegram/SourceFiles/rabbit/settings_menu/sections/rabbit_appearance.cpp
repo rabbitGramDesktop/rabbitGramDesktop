@@ -10,6 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/settings/rabbit_settings.h"
 #include "rabbit/lang/rabbit_lang.h"
 #include "rabbit/settings_menu/sections/rabbit_appearance.h"
+#include "rabbit/ui/settings/icon_picker.h"
 
 #include "lang_auto.h"
 #include "mainwindow.h"
@@ -61,6 +62,14 @@ namespace Settings {
             : Section(parent) {
         setupContent(controller);
     }
+
+	void RabbitAppearance::SetupAppIcon(not_null<Ui::VerticalLayout *> container) {
+		Ui::AddSubsectionTitle(container, rktr("rtg_settings_app_icon"));
+
+		container->add(
+			object_ptr<IconPicker>(container),
+			st::settingsCheckboxPadding);
+	}
 
 	void RabbitAppearance::SetupAppearance(not_null<Ui::VerticalLayout *> container) {
 		Ui::AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
@@ -220,6 +229,11 @@ namespace Settings {
 	}
 
     void RabbitAppearance::SetupRabbitAppearance(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
+		Ui::AddSkip(container);
+		SetupAppIcon(container);
+
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
 		Ui::AddSkip(container);
     	SetupAppearance(container);
 

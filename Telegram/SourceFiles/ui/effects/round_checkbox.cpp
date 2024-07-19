@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/effects/round_checkbox.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/rp_widget.h"
 #include "ui/ui_utility.h"
 #include "ui/painter.h"
@@ -416,7 +418,7 @@ void RoundImageCheckbox::paint(Painter &p, int x, int y, int outerWidth) const {
 			p.setPen(pen);
 			if (!radius) {
 				auto customRadius = outline.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
-				p.drawRoundedRect(outline, radius, radius);
+				p.drawRoundedRect(outline, customRadius, customRadius);
 			} else {
 				p.drawRoundedRect(outline, *radius, *radius);
 			}

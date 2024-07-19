@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_item.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "calls/calls_instance.h" // Core::App().calls().joinGroupCall.
@@ -5431,7 +5433,9 @@ PreparedServiceText HistoryItem::prepareCallScheduledText(
 	};
 	const auto time = QLocale().toString(
 		scheduled.time(),
-		QLocale::ShortFormat);
+		RabbitSettings::JsonSettings::GetBool("show_seconds")
+		? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+		: QLocale::system().timeFormat(QLocale::ShortFormat));
 	const auto prepareGeneric = [&] {
 		prepareWithDate(tr::lng_group_call_starts_date(
 			tr::now,

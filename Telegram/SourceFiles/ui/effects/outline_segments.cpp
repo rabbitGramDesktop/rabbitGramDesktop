@@ -18,12 +18,12 @@ void PaintOutlineSegments(
 		float64 fromFullProgress) {
 	Expects(!segments.empty());
 
+	auto radius = ellipse.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * .0102;
+
 	p.setBrush(Qt::NoBrush);
 	p.setPen(QPen(segments.front().brush, segments.front().width));
 	p.drawRoundedRect(
-		ellipse, 
-		ellipse.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * 0.0102, 
-		ellipse.width() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * 0.0102);
+		ellipse, radius, radius);
 	return;
 }
 

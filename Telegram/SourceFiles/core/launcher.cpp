@@ -392,7 +392,7 @@ int Launcher::exec() {
 	ThirdParty::start();
 	auto result = executeApplication();
 
-	DEBUG_LOG(("Telegram finished, result: %1").arg(result));
+	DEBUG_LOG(("rabbitGram finished, result: %1").arg(result));
 
 	if (!UpdaterDisabled() && cRestartingUpdate()) {
 		DEBUG_LOG(("Sandbox Info: executing updater to install update."));
@@ -400,7 +400,7 @@ int Launcher::exec() {
 			base::Platform::DeleteDirectory(cWorkingDir() + u"tupdates/temp"_q);
 		}
 	} else if (cRestarting()) {
-		DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."));
+		DEBUG_LOG(("Sandbox Info: executing rabbitGram because of restart."));
 		launchUpdater(UpdaterLaunch::JustRelaunch);
 	}
 

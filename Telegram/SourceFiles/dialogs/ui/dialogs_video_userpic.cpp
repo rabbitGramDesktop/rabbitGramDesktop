@@ -98,6 +98,7 @@ void VideoUserpic::paintLeft(
 		QPainterPath clipPath;
 		QImage frame = _video->current(request(size), now);
 		auto radius = frame.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+		if (_peer->isForum() && !RabbitSettings::JsonSettings::GetBool("general_roundness")) radius *= .5;
 		clipPath.addRoundedRect(
 			QRect(x, y, frame.width(), frame.height()),
 			radius, radius);
@@ -114,7 +115,7 @@ Media::Clip::FrameRequest VideoUserpic::request(int size) const {
 		.frame = { size, size },
 		.outer = { size, size },
 		.factor = style::DevicePixelRatio(),
-		.radius = ImageRoundRadius::Ellipse,
+		.radius = ImageRoundRadius::None,
 	};
 }
 

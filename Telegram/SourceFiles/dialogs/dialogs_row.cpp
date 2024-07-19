@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "dialogs/dialogs_row.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/chat/chat_theme.h" // CountAverageColor.
 #include "ui/color_contrast.h"
 #include "ui/effects/outline_segments.h"
@@ -426,12 +428,20 @@ void Row::PaintCornerBadgeFrame(
 	q.setBrush(data->active
 		? st::dialogsOnlineBadgeFgActive
 		: st::dialogsOnlineBadgeFg);
-	q.drawEllipse(QRectF(
+	QRectF badgeRect = QRectF(
 		photoSize - skip.x() - size,
 		photoSize - skip.y() - size,
 		size,
 		size
-	).marginsRemoved({ shrink, shrink, shrink, shrink }));
+	).marginsRemoved({ shrink, shrink, shrink, shrink });
+
+	auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+	auto callOrOnline = (peer->isChannel() && Data::ChannelHasActiveCall(peer->asChannel())) || online;
+	auto drawRect = RabbitSettings::JsonSettings::GetBool("general_roundness");
+
+	if (!callOrOnline || (callOrOnline & drawRect)) {
+		q.drawRoundedRect(badgeRect, radius, radius);
+	} else { q.drawEllipse(badgeRect); }
 }
 
 void Row::paintUserpic(

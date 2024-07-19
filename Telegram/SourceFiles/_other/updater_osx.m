@@ -8,7 +8,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #import <Cocoa/Cocoa.h>
 #include <sys/xattr.h>
 
-NSString *appName = @"Telegram.app";
+NSString *appName = @"rabbitGram.app";
 NSString *appDir = nil;
 NSString *workDir = nil;
 

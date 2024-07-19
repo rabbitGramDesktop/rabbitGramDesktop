@@ -114,7 +114,7 @@ void AboutBox::showVersionHistory() {
 		getDelegate()->show(
 			Ui::MakeInformBox(
 				"The link to the current private alpha "
-				"version of Telegram Desktop was copied to the clipboard."),
+				"version of rabbitGram Desktop was copied to the clipboard."),
 			Ui::LayerOption::CloseOther);
 	} else {
 		File::OpenUrl(Core::App().changelogLink());

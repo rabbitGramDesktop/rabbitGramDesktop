@@ -1,0 +1,20 @@
+/*
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
+
+For license and copyright information please follow this link:
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
+*/
+
+using "ui/basic.style";
+using "ui/colors.palette";
+using "ui/widgets/widgets.style";
+using "info/info.style";
+
+cpPadding: 14px;
+cpSelectedPadding: 2px;
+cpSelectedRounding: 12px;
+cpImagePadding: 4px;
+cpSpacingX: 16px;
+cpSpacingY: 8px;
+cpIconSize: 64px;

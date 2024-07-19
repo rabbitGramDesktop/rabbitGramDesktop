@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_information.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/wrap/vertical_layout.h"
 #include "ui/wrap/vertical_layout_reorder.h"
 #include "ui/wrap/padding_wrap.h"
@@ -726,10 +728,11 @@ void SetupAccountsWrap(
 			const auto rect = QRectF(shift, shift, diameter, diameter);
 			auto hq = PainterHighQualityEnabler(p);
 			auto pen = st::windowBgActive->p; // The same as '+' in add.
+			auto radius = rect.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
 			pen.setWidthF(line);
 			p.setPen(pen);
 			p.setBrush(Qt::NoBrush);
-			p.drawEllipse(rect);
+			p.drawRoundedRect(rect, radius, radius);
 		}
 	}, state->userpic.lifetime());
 

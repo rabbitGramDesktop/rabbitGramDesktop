@@ -522,7 +522,7 @@ QString countAlphaVersionSignature(quint64 version) { // duplicated in autoupdat
 		return QString();
 	}
 
-	QByteArray signedData = (QLatin1String("TelegramBeta_") + QString::number(version, 16).toLower()).toUtf8();
+	QByteArray signedData = (QLatin1String("rabbitGramBeta_") + QString::number(version, 16).toLower()).toUtf8();
 
 	static const int32 shaSize = 20, keySize = 128;
 

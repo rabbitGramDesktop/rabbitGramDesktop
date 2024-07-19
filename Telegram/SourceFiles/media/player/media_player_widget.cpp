@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "media/player/media_player_widget.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "platform/platform_specific.h"
 #include "data/data_document.h"
 #include "data/data_session.h"
@@ -683,7 +685,11 @@ void Widget::handleSongChange() {
 			const auto date = [item] {
 				const auto parsed = ItemDateTime(item);
 				const auto date = parsed.date();
-				const auto time = QLocale().toString(parsed.time(), QLocale::ShortFormat);
+				const auto time = QLocale().toString(
+					parsed.time(), 
+					RabbitSettings::JsonSettings::GetBool("show_seconds")
+						? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+						: QLocale::system().timeFormat(QLocale::ShortFormat));
 				const auto today = QDateTime::currentDateTime().date();
 				if (date == today) {
 					return tr::lng_player_message_today(

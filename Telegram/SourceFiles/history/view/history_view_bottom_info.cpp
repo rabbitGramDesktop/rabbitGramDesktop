@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_bottom_info.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/chat/message_bubble.h"
 #include "ui/chat/chat_style.h"
 #include "ui/effects/reaction_fly_animation.h"
@@ -411,7 +413,9 @@ void BottomInfo::layoutDateText() {
 	const auto prefix = !author.isEmpty() ? u", "_q : QString();
 	const auto date = edited + QLocale().toString(
 		_data.date.time(),
-		QLocale::ShortFormat);
+		RabbitSettings::JsonSettings::GetBool("show_seconds")
+			? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+			: QLocale::system().timeFormat(QLocale::ShortFormat));
 	const auto afterAuthor = prefix + date;
 	const auto afterAuthorWidth = st::msgDateFont->width(afterAuthor);
 	const auto authorWidth = st::msgDateFont->width(author);

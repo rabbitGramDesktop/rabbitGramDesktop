@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_codes.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/toast/toast.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
@@ -248,6 +250,13 @@ auto GenerateCodes() {
 		Data::CloudThemes::SetTestingColors(now);
 		Ui::Toast::Show(now ? "Testing chat theme colors!" : "Not testing..");
 	});
+	codes.emplace(u"rtgspoof"_q, [](SessionController* window) {
+		RabbitSettings::JsonSettings::Set("spoof_webview_as_android", !RabbitSettings::JsonSettings::GetBool("spoof_webview_as_android"));
+		RabbitSettings::JsonSettings::Write();
+		Ui::Toast::Show(RabbitSettings::JsonSettings::GetBool("spoof_webview_as_android")
+			? "Spoofing webview as Android"
+			: "Spoofing webview as TDesktop");
+		});
 
 #ifdef Q_OS_MAC
 	codes.emplace(u"customicon"_q, [](SessionController *window) {

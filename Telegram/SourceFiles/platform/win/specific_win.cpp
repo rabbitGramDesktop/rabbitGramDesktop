@@ -238,7 +238,7 @@ QString psAppDataPath() {
 	if (GetEnvironmentVariable(L"APPDATA", wstrPath, maxFileLen)) {
 		QDir appData(QString::fromStdWString(std::wstring(wstrPath)));
 #ifdef OS_WIN_STORE
-		return appData.absolutePath() + u"/Telegram Desktop UWP/"_q;
+		return appData.absolutePath() + u"/rabbitGram Desktop UWP/"_q;
 #else // OS_WIN_STORE
 		return appData.absolutePath() + '/' + AppName.utf16() + '/';
 #endif // OS_WIN_STORE
@@ -319,10 +319,10 @@ void psDoFixPrevious() {
 		HRESULT userDesktopRes = SHGetFolderPath(0, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, userDesktopFolder);
 		HRESULT commonDesktopRes = SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, commonDesktopFolder);
 		if (SUCCEEDED(userDesktopRes)) {
-			userDesktopLnk = QString::fromWCharArray(userDesktopFolder) + "\\Telegram.lnk";
+			userDesktopLnk = QString::fromWCharArray(userDesktopFolder) + "\\rabbitGram.lnk";
 		}
 		if (SUCCEEDED(commonDesktopRes)) {
-			commonDesktopLnk = QString::fromWCharArray(commonDesktopFolder) + "\\Telegram.lnk";
+			commonDesktopLnk = QString::fromWCharArray(commonDesktopFolder) + "\\rabbitGram.lnk";
 		}
 		QFile userDesktopFile(userDesktopLnk), commonDesktopFile(commonDesktopLnk);
 		if (QFile::exists(userDesktopLnk) && QFile::exists(commonDesktopLnk) && userDesktopLnk != commonDesktopLnk) {
@@ -463,8 +463,8 @@ void AutostartToggle(bool enabled, Fn<void(bool)> done) {
 		silent,
 		FOLDERID_Startup,
 		L"-autostart",
-		L"Telegram autorun link.\n"
-		"You can disable autorun in Telegram settings.");
+		L"rabbitGram autorun link.\n"
+		"You can disable autorun in rabbitGram settings.");
 	if (done) {
 		done(enabled && success);
 	}
@@ -667,8 +667,8 @@ void psSendToMenu(bool send, bool silent) {
 		silent,
 		FOLDERID_SendTo,
 		L"-sendpath",
-		L"Telegram send to link.\n"
-		"You can disable send to menu item in Telegram settings.");
+		L"rabbitGram send to link.\n"
+		"You can disable send to menu item in rabbitGram settings.");
 }
 
 bool psLaunchMaps(const Data::LocationPoint &point) {
