@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/reactions/history_view_reactions.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "history/history_item.h"
 #include "history/history.h"
@@ -621,7 +623,7 @@ void InlineList::paintSingleBg(
 		float64 opacity) const {
 	p.setOpacity(opacity);
 	if (!areTags()) {
-		const auto radius = fill.height() / 2.;
+		const auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100. * fill.height();
 		p.setBrush(color);
 		p.drawRoundedRect(fill, radius, radius);
 		return;

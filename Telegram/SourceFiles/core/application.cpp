@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "core/application.h"
+
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "data/data_abstract_structure.h"
 #include "data/data_forum.h"
@@ -262,6 +264,7 @@ void Application::run() {
 	_notifications = std::make_unique<Window::Notifications::System>();
 
 	startLocalStorage();
+	RabbitLang::Lang::Load(Lang::GetInstance().baseId(), Lang::GetInstance().id());
 
 	style::SetCustomFont(settings().customFontFamily());
 	style::internal::StartFonts();

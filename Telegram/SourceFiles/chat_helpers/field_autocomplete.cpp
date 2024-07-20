@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "chat_helpers/field_autocomplete.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "data/business/data_shortcut_messages.h"
 #include "data/data_document.h"
@@ -1267,7 +1269,10 @@ bool FieldAutocomplete::Inner::chooseAtIndex(
 	} else if (!_mrows->empty()) {
 		if (index < _mrows->size()) {
 			const auto user = _mrows->at(index).user;
-			_mentionChosen.fire({ user, PrimaryUsername(user), method });
+			const auto mentionUsername = (RabbitSettings::JsonSettings::GetInt("comma_after_mention") && !user->isBot())
+				? PrimaryUsername(user) + ","
+				: PrimaryUsername(user);			
+			_mentionChosen.fire({ user, mentionUsername, method });
 			return true;
 		}
 	} else if (!_hrows->empty()) {

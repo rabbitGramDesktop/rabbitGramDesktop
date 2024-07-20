@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "core/launcher.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "platform/platform_launcher.h"
 #include "platform/platform_specific.h"
@@ -317,7 +319,7 @@ void Launcher::init() {
 	prepareSettings();
 	initQtMessageLogging();
 
-	QApplication::setApplicationName(u"TelegramDesktop"_q);
+	QApplication::setApplicationName(u"rabbitGramDesktop"_q);
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 	// fallback session management is useless for tdesktop since it doesn't have
@@ -351,6 +353,7 @@ void Launcher::initHighDpi() {
 }
 
 int Launcher::exec() {
+	RabbitSettings::JsonSettings::Start();
 	init();
 
 	if (cLaunchMode() == LaunchModeFixPrevious) {
@@ -362,6 +365,7 @@ int Launcher::exec() {
 	// Must be started before Platform is started.
 	Logs::start();
 	base::options::init(cWorkingDir() + "tdata/experimental_options.json");
+	RabbitSettings::JsonSettings::Load();
 
 	// Must be called after options are inited.
 	initHighDpi();
@@ -388,7 +392,7 @@ int Launcher::exec() {
 	ThirdParty::start();
 	auto result = executeApplication();
 
-	DEBUG_LOG(("Telegram finished, result: %1").arg(result));
+	DEBUG_LOG(("rabbitGram finished, result: %1").arg(result));
 
 	if (!UpdaterDisabled() && cRestartingUpdate()) {
 		DEBUG_LOG(("Sandbox Info: executing updater to install update."));
@@ -396,13 +400,14 @@ int Launcher::exec() {
 			base::Platform::DeleteDirectory(cWorkingDir() + u"tupdates/temp"_q);
 		}
 	} else if (cRestarting()) {
-		DEBUG_LOG(("Sandbox Info: executing Telegram because of restart."));
+		DEBUG_LOG(("Sandbox Info: executing rabbitGram because of restart."));
 		launchUpdater(UpdaterLaunch::JustRelaunch);
 	}
 
 	CrashReports::Finish();
 	ThirdParty::finish();
 	Platform::finish();
+	RabbitSettings::JsonSettings::Finish();
 	Logs::finish();
 
 	return result;

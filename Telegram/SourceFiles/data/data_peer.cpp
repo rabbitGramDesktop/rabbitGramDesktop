@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "data/data_peer.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "data/data_user.h"
 #include "data/data_chat.h"
@@ -345,7 +347,20 @@ void PeerData::paintUserpic(
 		cloud ? nullptr : ensureEmptyUserpic().get(),
 		size * ratio,
 		isForum());
-	p.drawImage(QRect(x, y, size, size), view.cached);
+
+	auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+	if (isForum() && !RabbitSettings::JsonSettings::GetBool("general_roundness")) radius *= .5;
+
+	p.save();
+	auto hq = PainterHighQualityEnabler(p);
+	QPainterPath clipPath;
+	QImage frame = view.cached;
+	clipPath.addRoundedRect(
+		QRect(x, y, size, size),
+		radius, radius);
+	p.setClipPath(clipPath);
+	p.drawImage(x, y, frame);
+	p.restore();
 }
 
 void PeerData::loadUserpic() {

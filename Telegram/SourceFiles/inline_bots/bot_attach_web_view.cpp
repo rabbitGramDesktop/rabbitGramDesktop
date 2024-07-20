@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "inline_bots/bot_attach_web_view.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "api/api_blocked_peers.h"
 #include "api/api_common.h"
@@ -430,6 +432,10 @@ void BotAction::handleKeyPress(not_null<QKeyEvent*> e) {
 	if (key == Qt::Key_Enter || key == Qt::Key_Return) {
 		setClicked(Ui::Menu::TriggeredSource::Keyboard);
 	}
+}
+
+QString WebviewPlatform() {
+	return RabbitSettings::JsonSettings::GetBool("spoof_webview_as_android") ? "android" : "tdesktop";
 }
 
 } // namespace
@@ -912,7 +918,7 @@ void AttachWebView::request(const WebViewButton &button) {
 		MTP_bytes(button.url),
 		MTP_string(_startCommand),
 		MTP_dataJSON(MTP_bytes(Window::Theme::WebViewParams().json)),
-		MTP_string("tdesktop"),
+		MTP_string(WebviewPlatform()),
 		action.mtpReplyTo(),
 		(action.options.sendAs
 			? action.options.sendAs->input
@@ -1233,7 +1239,7 @@ void AttachWebView::requestSimple(const WebViewButton &button) {
 		MTP_bytes(button.url),
 		MTP_string(button.startCommand),
 		MTP_dataJSON(MTP_bytes(Window::Theme::WebViewParams().json)),
-		MTP_string("tdesktop")
+		MTP_string(WebviewPlatform())
 	)).done([=](const MTPWebViewResult &result) {
 		_requestId = 0;
 		const auto &data = result.data();
@@ -1311,7 +1317,7 @@ void AttachWebView::requestMenu(
 			MTP_string(url),
 			MTPstring(), // start_param
 			MTP_dataJSON(MTP_bytes(Window::Theme::WebViewParams().json)),
-			MTP_string("tdesktop"),
+			MTP_string(WebviewPlatform()),
 			action.mtpReplyTo(),
 			(action.options.sendAs
 				? action.options.sendAs->input
@@ -1441,7 +1447,7 @@ void AttachWebView::requestAppView(bool allowWrite) {
 		MTP_inputBotAppID(MTP_long(app->id), MTP_long(app->accessHash)),
 		MTP_string(_startCommand),
 		MTP_dataJSON(MTP_bytes(Window::Theme::WebViewParams().json)),
-		MTP_string("tdesktop")
+		MTP_string(WebviewPlatform())
 	)).done([=](const MTPWebViewResult &result) {
 		_requestId = 0;
 		const auto &data = result.data();

@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "core/update_checker.h"
 
@@ -1677,7 +1677,7 @@ QString countAlphaVersionSignature(uint64 version) { // duplicated in packer.cpp
 		return QString();
 	}
 
-	QByteArray signedData = (qstr("TelegramBeta_") + QString::number(version, 16).toLower()).toUtf8();
+	QByteArray signedData = (qstr("rabbitGramBeta_") + QString::number(version, 16).toLower()).toUtf8();
 
 	static const int32 shaSize = 20, keySize = 128;
 
