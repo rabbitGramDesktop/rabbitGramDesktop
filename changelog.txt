@@ -1,3 +1,21 @@
+5.2.3 (07.07.24)
+
+- Fix crash in bot star stats page.
+- Bug fixes and other minor improvements.
+
+5.2.2 (02.07.24)
+
+- Fix topics search in topic groups.
+- Fix Instant View pages content updating.
+
+5.2.1 (01.07.24)
+
+- Fix crash when opening topic in a new window.
+- Fix crash in topic search scope dropdown.
+- Fix crash in video player.
+- Fix feeze and crash in Instant View (Windows).
+- Allow unlock by Apple Watch or System Password (macOS).
+
 5.2 (30.06.24)
 
 - Pay for content with Telegram Stars.

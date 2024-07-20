@@ -43,7 +43,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_premium_limits.h"
 #include "data/data_user.h"
 #include "history/admin_log/history_admin_log_section.h"
-#include "info/bot/earn/info_earn_widget.h"
+#include "info/bot/earn/info_bot_earn_widget.h"
 #include "info/channel_statistics/boosts/info_boosts_widget.h"
 #include "info/profile/info_profile_values.h"
 #include "info/info_memento.h"
@@ -2200,8 +2200,11 @@ void Controller::saveForum() {
 		channel->inputChannel,
 		MTP_bool(*_savingData.forum)
 	)).done([=](const MTPUpdates &result) {
+		const auto weak = base::make_weak(this);
 		channel->session().api().applyUpdates(result);
-		continueSave();
+		if (weak) { // todo better to be able to save in closed already box.
+			continueSave();
+		}
 	}).fail([=](const MTP::Error &error) {
 		if (error.type() == u"CHAT_NOT_MODIFIED"_q) {
 			continueSave();

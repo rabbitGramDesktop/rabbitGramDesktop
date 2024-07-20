@@ -5,7 +5,7 @@ the unofficial app based on Telegram Desktop.
 For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
-#include "info/channel_statistics/earn/info_earn_inner_widget.h"
+#include "info/channel_statistics/earn/info_channel_earn_list.h"
 
 #include "api/api_credits.h"
 #include "api/api_earn.h"
@@ -24,7 +24,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/stickers/data_custom_emoji.h"
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "info/channel_statistics/earn/earn_format.h"
-#include "info/channel_statistics/earn/info_earn_widget.h"
+#include "info/channel_statistics/earn/info_channel_earn_widget.h"
 #include "info/info_controller.h"
 #include "info/profile/info_profile_values.h" // Info::Profile::NameValue.
 #include "info/statistics/info_statistics_inner_widget.h" // FillLoading.
@@ -281,6 +281,9 @@ void InnerWidget::load() {
 		rpl::lifetime apiPremiumBotLifetime;
 	};
 	const auto state = lifetime().make_state<State>(_peer);
+	using ChannelFlag = ChannelDataFlag;
+	const auto canViewCredits = !_peer->isChannel()
+		|| (_peer->asChannel()->flags() & ChannelFlag::CanViewCreditsRevenue);
 
 	Info::Statistics::FillLoading(
 		this,
@@ -363,7 +366,11 @@ void InnerWidget::load() {
 					_state.premiumBotId = bot->id;
 					state->apiCredits.request(
 					) | rpl::start_with_error_done([=](const QString &error) {
-						fail(error);
+						if (canViewCredits) {
+							fail(error);
+						} else {
+							_state.creditsEarn = {};
+						}
 						finish();
 					}, [=] {
 						_state.creditsEarn = state->apiCredits.data();

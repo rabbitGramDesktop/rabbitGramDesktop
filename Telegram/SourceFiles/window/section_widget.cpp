@@ -8,6 +8,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "window/section_widget.h"
 
 #include "mainwidget.h"
+#include "mainwindow.h"
 #include "ui/ui_utility.h"
 #include "ui/chat/chat_theme.h"
 #include "ui/painter.h"
@@ -456,7 +457,7 @@ void SectionWidget::showFinished() {
 	showChildren();
 	showFinishedHook();
 
-	setInnerFocus();
+	controller()->widget()->setInnerFocus();
 }
 
 rpl::producer<int> SectionWidget::desiredHeight() const {
