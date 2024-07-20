@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_media_unwrapped.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "data/data_session.h"
 #include "history/history.h"
 #include "history/view/media/history_view_media_common.h"
@@ -44,6 +46,11 @@ UnwrappedMedia::UnwrappedMedia(
 	std::unique_ptr<Content> content)
 : Media(parent)
 , _content(std::move(content)) {
+	RabbitSettings::JsonSettings::Events(
+		"sticker_size"
+	) | rpl::start_with_next([=] {
+		history()->owner().requestItemViewRefresh(_parent->data());
+	}, _lifetime);
 }
 
 QSize UnwrappedMedia::countOptimalSize() {

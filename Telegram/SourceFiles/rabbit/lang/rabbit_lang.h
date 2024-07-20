@@ -71,96 +71,96 @@ rpl::producer<> Events();
 
 inline QString ktr(
 	const QString &key,
-	::RabbitLang::Lang::Var var1 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var2 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var3 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var4 = ::RabbitLang::Lang::Var()) {
-	return ::RabbitLang::Lang::Translate(key, var1, var2, var3, var4);
+	RabbitLang::Lang::Var var1 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var2 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var3 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var4 = RabbitLang::Lang::Var()) {
+	return RabbitLang::Lang::Translate(key, var1, var2, var3, var4);
 }
 
 inline QString ktr(
 	const QString &key,
 	float64 value,
-	::RabbitLang::Lang::Var var1 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var2 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var3 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var4 = ::RabbitLang::Lang::Var()) {
-	return ::RabbitLang::Lang::Translate(key, value, var1, var2, var3, var4);
+	RabbitLang::Lang::Var var1 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var2 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var3 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var4 = RabbitLang::Lang::Var()) {
+	return RabbitLang::Lang::Translate(key, value, var1, var2, var3, var4);
 }
 
 inline TextWithEntities ktre(
 	const QString &key,
-	::RabbitLang::Lang::EntVar var1 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var2 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var3 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var4 = ::RabbitLang::Lang::EntVar()) {
-	return ::RabbitLang::Lang::TranslateWithEntities(key, var1, var2, var3, var4);
+	RabbitLang::Lang::EntVar var1 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var2 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var3 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var4 = RabbitLang::Lang::EntVar()) {
+	return RabbitLang::Lang::TranslateWithEntities(key, var1, var2, var3, var4);
 }
 
 inline TextWithEntities ktre(
 	const QString &key,
 	float64 value,
-	::RabbitLang::Lang::EntVar var1 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var2 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var3 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var4 = ::RabbitLang::Lang::EntVar()) {
-	return ::RabbitLang::Lang::TranslateWithEntities(key, value, var1, var2, var3, var4);
+	RabbitLang::Lang::EntVar var1 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var2 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var3 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var4 = RabbitLang::Lang::EntVar()) {
+	return RabbitLang::Lang::TranslateWithEntities(key, value, var1, var2, var3, var4);
 }
 
 inline rpl::producer<QString> rktr(
 	const QString &key,
-	::RabbitLang::Lang::Var var1 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var2 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var3 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var4 = ::RabbitLang::Lang::Var()) {
+	RabbitLang::Lang::Var var1 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var2 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var3 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var4 = RabbitLang::Lang::Var()) {
 	return rpl::single(
-			::RabbitLang::Lang::Translate(key, var1, var2, var3, var4)
+			RabbitLang::Lang::Translate(key, var1, var2, var3, var4)
 		) | rpl::then(
-			::RabbitLang::Lang::Events() | rpl::map(
-				[=]{ return ::RabbitLang::Lang::Translate(key, var1, var2, var3, var4); })
+			RabbitLang::Lang::Events() | rpl::map(
+				[=]{ return RabbitLang::Lang::Translate(key, var1, var2, var3, var4); })
 		);
 }
 
 inline rpl::producer<QString> rktr(
 	const QString &key,
 	float64 value,
-	::RabbitLang::Lang::Var var1 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var2 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var3 = ::RabbitLang::Lang::Var(),
-	::RabbitLang::Lang::Var var4 = ::RabbitLang::Lang::Var()) {
+	RabbitLang::Lang::Var var1 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var2 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var3 = RabbitLang::Lang::Var(),
+	RabbitLang::Lang::Var var4 = RabbitLang::Lang::Var()) {
 	return rpl::single(
-			::RabbitLang::Lang::Translate(key, value, var1, var2, var3, var4)
+			RabbitLang::Lang::Translate(key, value, var1, var2, var3, var4)
 		) | rpl::then(
-			::RabbitLang::Lang::Events() | rpl::map(
-				[=]{ return ::RabbitLang::Lang::Translate(key, value, var1, var2, var3, var4); })
+			RabbitLang::Lang::Events() | rpl::map(
+				[=]{ return RabbitLang::Lang::Translate(key, value, var1, var2, var3, var4); })
 		);
 }
 
 inline rpl::producer<TextWithEntities> rktre(
 	const QString &key,
-	::RabbitLang::Lang::EntVar var1 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var2 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var3 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var4 = ::RabbitLang::Lang::EntVar()) {
+	RabbitLang::Lang::EntVar var1 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var2 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var3 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var4 = RabbitLang::Lang::EntVar()) {
 	return rpl::single(
-			::RabbitLang::Lang::TranslateWithEntities(key, var1, var2, var3, var4)
+			RabbitLang::Lang::TranslateWithEntities(key, var1, var2, var3, var4)
 		) | rpl::then(
-			::RabbitLang::Lang::Events() | rpl::map(
-				[=]{ return ::RabbitLang::Lang::TranslateWithEntities(key, var1, var2, var3, var4); })
+			RabbitLang::Lang::Events() | rpl::map(
+				[=]{ return RabbitLang::Lang::TranslateWithEntities(key, var1, var2, var3, var4); })
 		);
 }
 
 inline rpl::producer<TextWithEntities> rktre(
 	const QString &key,
 	float64 value,
-	::RabbitLang::Lang::EntVar var1 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var2 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var3 = ::RabbitLang::Lang::EntVar(),
-	::RabbitLang::Lang::EntVar var4 = ::RabbitLang::Lang::EntVar()) {
+	RabbitLang::Lang::EntVar var1 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var2 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var3 = RabbitLang::Lang::EntVar(),
+	RabbitLang::Lang::EntVar var4 = RabbitLang::Lang::EntVar()) {
 	return rpl::single(
-			::RabbitLang::Lang::TranslateWithEntities(key, value, var1, var2, var3, var4)
+			RabbitLang::Lang::TranslateWithEntities(key, value, var1, var2, var3, var4)
 		) | rpl::then(
-			::RabbitLang::Lang::Events() | rpl::map(
-				[=]{ return ::RabbitLang::Lang::TranslateWithEntities(key, value, var1, var2, var3, var4); })
+			RabbitLang::Lang::Events() | rpl::map(
+				[=]{ return RabbitLang::Lang::TranslateWithEntities(key, value, var1, var2, var3, var4); })
 		);
 }

@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "boxes/sticker_set_box.h"
 #include "history/history.h"
 #include "history/history_item_components.h"
@@ -143,6 +145,8 @@ bool Sticker::webpagePart() const {
 }
 
 void Sticker::initSize(int customSize) {
+	if (!customSize) customSize = RabbitSettings::JsonSettings::GetInt("sticker_size");
+
 	if (customSize > 0) {
 		const auto original = Size(_data);
 		const auto proposed = QSize{ customSize, customSize };
@@ -188,8 +192,9 @@ bool Sticker::readyToDrawAnimationFrame() {
 }
 
 QSize Sticker::Size() {
-	const auto side = std::min(st::maxStickerSize, kMaxSizeFixed);
-	return { side, side };
+	const auto currentStickerHeight = RabbitSettings::JsonSettings::GetInt("sticker_size");
+	const auto maxHeight = int(st::maxStickerSize / 256.0 * currentStickerHeight);
+	return { maxHeight, maxHeight };
 }
 
 QSize Sticker::Size(not_null<DocumentData*> document) {
@@ -214,7 +219,9 @@ QSize Sticker::MessageEffectSize() {
 }
 
 QSize Sticker::EmojiSize() {
-	const auto side = std::min(st::maxAnimatedEmojiSize, kMaxEmojiSizeFixed);
+	const auto currentStickerHeight = RabbitSettings::JsonSettings::GetInt("sticker_size");
+	const auto maxHeight = int(st::maxStickerSize / 256.0 * currentStickerHeight / 2);
+	const auto side = std::min(maxHeight, kMaxEmojiSizeFixed);
 	return { side, side };
 }
 

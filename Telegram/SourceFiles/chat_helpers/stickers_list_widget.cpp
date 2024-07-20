@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "chat_helpers/stickers_list_widget.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "core/application.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
@@ -284,6 +286,12 @@ StickersListWidget::StickersListWidget(
 			refreshStickers();
 		}, lifetime());
 	}
+
+	RabbitSettings::JsonSettings::Events(
+		"recent_stickers_limit"
+	) | rpl::start_with_next([=] {
+		refreshStickers();
+	}, lifetime());
 }
 
 rpl::producer<FileChosen> StickersListWidget::chosen() const {
@@ -2216,7 +2224,7 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 	_custom.reserve(cloudCount + recent.size() + customCount);
 
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
-		if (result.size() >= kRecentDisplayLimit) {
+		if (result.size() >= RabbitSettings::JsonSettings::GetInt("recent_stickers_limit")) {
 			return;
 		}
 		const auto i = ranges::find(result, document, &Sticker::document);

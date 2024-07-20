@@ -40,13 +40,13 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 	rktr(#LangKey), \
 	st::settingsButtonNoIcon \
 ))->toggleOn( \
-	rpl::single(::RabbitSettings::JsonSettings::GetBool(#Option)) \
+	rpl::single(RabbitSettings::JsonSettings::GetBool(#Option)) \
 )->toggledValue( \
 ) | rpl::filter([](bool enabled) { \
-	return (enabled != ::RabbitSettings::JsonSettings::GetBool(#Option)); \
+	return (enabled != RabbitSettings::JsonSettings::GetBool(#Option)); \
 }) | rpl::start_with_next([](bool enabled) { \
-	::RabbitSettings::JsonSettings::Set(#Option, enabled); \
-	::RabbitSettings::JsonSettings::Write(); \
+	RabbitSettings::JsonSettings::Set(#Option, enabled); \
+	RabbitSettings::JsonSettings::Write(); \
 }, container->lifetime());
 
 namespace Settings {
