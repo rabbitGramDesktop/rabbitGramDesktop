@@ -68,7 +68,7 @@ void StickerSizePreview::paintEvent(QPaintEvent* e) {
     Painter p(this);
     PainterHighQualityEnabler hq(p);
 
-    auto size = QSize(RabbitSettings::JsonSettings::GetInt("sticker_size"), RabbitSettings::JsonSettings::GetInt("sticker_size") * 0.7);
+    auto size = QSize(RabbitSettings::JsonSettings::GetInt("sticker_size"), RabbitSettings::JsonSettings::GetInt("sticker_size"));
 
     p.setPen(Qt::NoPen);
     p.setBrush(st::rndPreviewFill);
@@ -87,22 +87,21 @@ void StickerSizePreview::paintEvent(QPaintEvent* e) {
         st::stickerPreviewTimeHeight / 2.
     );
 
-    auto multipliers = { 1.7, 1.5, 1., 1.2, .8, 1.3, 1.4, 1.1, .5, .9 };
-    auto baseWidth = st::boxWidth / 2;
+    auto multipliers = { 1.7, 1.5, 1., 1.2 };
     auto topPadding = size.height() + st::stickerPreviewMargin;
-    auto spacefillerMsgSkeletonHeight = st::stickerSpacefillerHeight;
 
     for (auto multiplier : multipliers) {
-        auto spacefillerMsgSkeletonWidth = baseWidth * multiplier;
+        auto spacefillerMsgSkeletonWidth = (st::boxWidth / 2) * multiplier;
 
         p.drawRoundedRect(
-            st::boxWidth - spacefillerMsgSkeletonWidth, topPadding,
+            st::boxWidth - spacefillerMsgSkeletonWidth, 
+            topPadding,
             spacefillerMsgSkeletonWidth,
-            spacefillerMsgSkeletonHeight,
-            spacefillerMsgSkeletonHeight / 2,
-            spacefillerMsgSkeletonHeight / 2
+            st::stickerSpacefillerHeight,
+            st::stickerSpacefillerHeight / 2.,
+            st::stickerSpacefillerHeight / 2.
         );
 
-        topPadding += st::stickerPreviewMargin + spacefillerMsgSkeletonHeight;
+        topPadding += st::stickerPreviewMargin + st::stickerSpacefillerHeight;
     }
 }

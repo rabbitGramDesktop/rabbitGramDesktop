@@ -102,11 +102,62 @@ namespace Settings {
 			{ &st::menuIconChatBubble });
     }
 
+	void Rabbit::SetupRabbitLinks(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
+		AddSubsectionTitle(container, rktr("rtg_links"));
+
+		Ui::AddSkip(container);
+
+		AddButtonWithLabel(
+			container,
+			rktr("rtg_channel_title"),
+			rktr("rtg_channel_label"),
+			st::settingsButton,
+			{ &st::menuIconChannel }
+		)->setClickedCallback([=] {
+			Core::App().openLocalUrl("tg://resolve?domain=rabbitGramUpdates", {});
+		});
+
+    	AddButtonWithLabel(
+			container,
+			rktr("rtg_group_title"),
+			rktr("rtg_group_label"),
+			st::settingsButton,
+			{ &st::menuIconGroups }
+		)->setClickedCallback([=] {
+			Core::App().openLocalUrl("tg://resolve?domain=rabbitGramDesktop", {});
+		});
+
+    	AddButtonWithLabel(
+			container,
+			rktr("rtg_translate_title"),
+			rktr("rtg_translate_label"),
+			st::settingsButton,
+			{ &st::menuIconTranslate }
+		)->setClickedCallback([=] {
+			UrlClickHandler::Open("https://crowdin.com/project/rabbitgramdesktop");
+		});
+
+    	AddButtonWithLabel(
+			container,
+			rktr("rtg_source_title"),
+			rktr("rtg_source_label"),
+			st::settingsButton,
+			{ &st::menuIconDelete }
+		)->setClickedCallback([=] {
+			UrlClickHandler::Open("https://github.com/rabbitgramdesktop/rabbitgramdesktop");
+		});
+	}
+
     void Rabbit::setupContent(not_null<Window::SessionController *> controller) {
         const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
 
     	Ui::AddSkip(content);
         SetupRabbitSettings(content, controller);
+
+		Ui::AddSkip(content);
+    	Ui::AddDivider(content);
+    	Ui::AddSkip(content);
+    	SetupRabbitLinks(content, controller);
 
         Ui::ResizeFitChild(this, content);
     }

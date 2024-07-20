@@ -27,7 +27,7 @@ rndPenSize: 2px;
 
 stickerPreviewTimeWidth: 36px;
 stickerPreviewTimeHeight: 18px;
-stickerSpacefillerHeight: 24px;
+stickerSpacefillerHeight: 30px;
 
-stickerPreviewSize: 270px;
+stickerPreviewSize: 220px;
 stickerPreviewMargin: 8px;
