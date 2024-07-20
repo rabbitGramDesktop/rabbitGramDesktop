@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/text/format_values.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "lang/lang_keys.h"
 #include "countries/countries_instance.h"
@@ -497,7 +499,9 @@ QString FormatDialogsDate(const QDateTime &lastTime) {
 
 	if ((lastDate == nowDate)
 		|| (std::abs(lastTime.secsTo(now)) < kRecentlyInSeconds)) {
-		return QLocale().toString(lastTime.time(), QLocale::ShortFormat);
+		return RabbitSettings::JsonSettings::GetBool("show_seconds")
+			? QLocale().toString(lastTime.time(), QLocale::LongFormat).remove(" t")
+			: QLocale().toString(lastTime.time(), QLocale::ShortFormat);
 	} else if (std::abs(lastDate.daysTo(nowDate)) < 7) {
 		return langDayOfWeek(lastDate);
 	} else {

@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "dialogs/ui/dialogs_video_userpic.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "core/file_location.h"
 #include "data/data_peer.h"
@@ -38,6 +40,7 @@ void VideoUserpic::paintLeft(
 		int w,
 		int size,
 		bool paused) {
+	const auto hq = PainterHighQualityEnabler(p);
 	_lastSize = size;
 
 	const auto photoId = _peer->userpicPhotoId();
@@ -89,7 +92,19 @@ void VideoUserpic::paintLeft(
 		startReady();
 
 		const auto now = paused ? crl::time(0) : crl::now();
-		p.drawImage(x, y, _video->current(request(size), now));
+
+		p.save();
+
+		QPainterPath clipPath;
+		QImage frame = _video->current(request(size), now);
+		auto radius = frame.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+		if (_peer->isForum() && !RabbitSettings::JsonSettings::GetBool("general_roundness")) radius *= .5;
+		clipPath.addRoundedRect(
+			QRect(x, y, frame.width(), frame.height()),
+			radius, radius);
+		p.setClipPath(clipPath);
+		p.drawImage(x, y, frame);
+		p.restore();
 	} else {
 		_peer->paintUserpicLeft(p, view, x, y, w, size);
 	}
@@ -100,7 +115,7 @@ Media::Clip::FrameRequest VideoUserpic::request(int size) const {
 		.frame = { size, size },
 		.outer = { size, size },
 		.factor = style::DevicePixelRatio(),
-		.radius = ImageRoundRadius::Ellipse,
+		.radius = ImageRoundRadius::None,
 	};
 }
 

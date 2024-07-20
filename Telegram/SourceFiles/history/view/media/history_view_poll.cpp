@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_poll.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "core/ui_integration.h" // Core::MarkedTextContext.
 #include "lang/lang_keys.h"
@@ -918,7 +920,8 @@ void Poll::paintRecentVoters(
 			p.setPen(pen);
 			p.setBrush(Qt::NoBrush);
 			PainterHighQualityEnabler hq(p);
-			p.drawEllipse(x, y, size, size);
+			auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+			p.drawRoundedRect(x, y, size, size, radius, radius);
 		};
 		if (usesBubblePattern(context)) {
 			const auto add = st::lineWidth * 2;

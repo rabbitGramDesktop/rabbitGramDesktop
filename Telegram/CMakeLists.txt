@@ -1,8 +1,8 @@
-# This file is part of Telegram Desktop,
-# the official desktop application for the Telegram messaging service.
-#
+# This file is part of rabbitGram Desktop,
+# the unofficial app based on Telegram Desktop.
+# 
 # For license and copyright information please follow this link:
-# https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+# https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 add_executable(Telegram WIN32 MACOSX_BUNDLE)
 init_non_host_target(Telegram)
@@ -1329,6 +1329,26 @@ PRIVATE
     profile/profile_block_widget.h
     profile/profile_cover_drop_area.cpp
     profile/profile_cover_drop_area.h
+    rabbit/lang/rabbit_lang.cpp
+    rabbit/lang/rabbit_lang.h
+    rabbit/settings/rabbit_settings.cpp
+    rabbit/settings/rabbit_settings.h
+    rabbit/settings_menu/sections/rabbit_appearance.cpp
+    rabbit/settings_menu/sections/rabbit_appearance.h
+    rabbit/settings_menu/sections/rabbit_chats.cpp
+    rabbit/settings_menu/sections/rabbit_chats.h
+    rabbit/settings_menu/sections/rabbit_general.cpp
+    rabbit/settings_menu/sections/rabbit_general.h
+    rabbit/settings_menu/rabbit_settings_menu.cpp
+    rabbit/settings_menu/rabbit_settings_menu.h
+    rabbit/ui/settings/icon_picker.cpp
+    rabbit/ui/settings/icon_picker.h
+    rabbit/ui/settings/previews.cpp
+    rabbit/ui/settings/previews.h
+    rabbit/ui/rabbit_assets.cpp
+    rabbit/ui/rabbit_assets.h
+    rabbit/utils/windows_utils.cpp
+    rabbit/utils/windows_utils.h
     settings/business/settings_away_message.cpp
     settings/business/settings_away_message.h
     settings/business/settings_shortcut_messages.cpp
@@ -1602,6 +1622,7 @@ endif()
 
 nice_target_sources(Telegram ${res_loc}
 PRIVATE
+    qrc/rabbit/rabbit.qrc
     qrc/emoji_1.qrc
     qrc/emoji_2.qrc
     qrc/emoji_3.qrc

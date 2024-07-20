@@ -1,8 +1,8 @@
-# This file is part of Telegram Desktop,
-# the official desktop application for the Telegram messaging service.
-#
+# This file is part of rabbitGram Desktop,
+# the unofficial app based on Telegram Desktop.
+# 
 # For license and copyright information please follow this link:
-# https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+# https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 add_library(td_ui OBJECT)
 init_non_host_target(td_ui)
@@ -33,6 +33,7 @@ set(style_files
     passport/passport.style
     payments/ui/payments.style
     profile/profile.style
+    rabbit/ui/rabbit_assets.style
     settings/settings.style
     media/view/media_view.style
     overview/overview.style

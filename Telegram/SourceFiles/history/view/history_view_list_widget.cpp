@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "base/unixtime.h"
 #include "base/qt/qt_key_modifiers.h"
@@ -2475,7 +2477,11 @@ TextForMimeData ListWidget::getSelectedText() const {
 			not_null<HistoryItem*> item,
 			TextForMimeData &&unwrapped) {
 		auto time = QString(", [%1]\n").arg(
-			QLocale().toString(ItemDateTime(item), QLocale::ShortFormat));
+			QLocale().toString(
+				ItemDateTime(item), 
+				RabbitSettings::JsonSettings::GetBool("show_seconds")
+					? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+					: QLocale::system().timeFormat(QLocale::ShortFormat)));
 		auto part = TextForMimeData();
 		auto size = item->author()->name().size()
 			+ time.size()
@@ -2626,7 +2632,12 @@ void ListWidget::mouseDoubleClickEvent(QMouseEvent *e) {
 		mouseActionCancel();
 		switch (CurrentQuickAction()) {
 		case DoubleClickQuickAction::Reply: {
-			replyToMessageRequestNotify({ _overElement->data()->fullId() });
+			bool forceReact = _overElement->data()->isPost() && _overElement->data()->author()->isChannel();
+			if (forceReact) {
+				toggleFavoriteReaction(_overElement);
+			} else {
+				replyToMessageRequestNotify({ _overElement->data()->fullId() });
+			}
 		} break;
 		case DoubleClickQuickAction::React: {
 			toggleFavoriteReaction(_overElement);

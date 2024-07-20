@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "media/player/media_player_widget.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "platform/platform_specific.h"
 #include "data/data_document.h"
@@ -683,7 +685,11 @@ void Widget::handleSongChange() {
 			const auto date = [item] {
 				const auto parsed = ItemDateTime(item);
 				const auto date = parsed.date();
-				const auto time = QLocale().toString(parsed.time(), QLocale::ShortFormat);
+				const auto time = QLocale().toString(
+					parsed.time(), 
+					RabbitSettings::JsonSettings::GetBool("show_seconds")
+						? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+						: QLocale::system().timeFormat(QLocale::ShortFormat));
 				const auto today = QDateTime::currentDateTime().date();
 				if (date == today) {
 					return tr::lng_player_message_today(

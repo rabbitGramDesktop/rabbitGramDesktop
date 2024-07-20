@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "window/notifications_manager_default.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "platform/platform_notifications_manager.h"
 #include "platform/platform_specific.h"
@@ -47,6 +49,8 @@ namespace Window {
 namespace Notifications {
 namespace Default {
 namespace {
+
+auto kAutoHideInterval = crl::time(10000);
 
 [[nodiscard]] QPoint notificationStartPosition() {
 	const auto corner = Core::App().settings().notificationsCorner();
@@ -724,6 +728,14 @@ bool Notification::checkLastInput(
 		std::optional<crl::time> lastInputTime) {
 	if (!_waitingForInput) return true;
 
+	if (RabbitSettings::JsonSettings::GetBool("auto_hide_notifications") 
+			&& (crl::now() - _started > kAutoHideInterval) 
+			&& !hasReplyingNotifications) {
+		startHiding();
+		_waitingForInput = false;
+		return true;
+	}
+
 	using namespace Platform::Notifications;
 	const auto waitForUserInput = WaitForInputForCustom()
 		&& lastInputTime.has_value()
@@ -977,7 +989,7 @@ void Notification::updateNotifyDisplay() {
 				: TextWithEntities{ name };
 		};
 		auto title = options.hideNameAndPhoto
-			? TextWithEntities{ u"Telegram Desktop"_q }
+			? TextWithEntities{ u"rabbitGram Desktop"_q }
 			: reminder
 			? tr::lng_notification_reminder(tr::now, Ui::Text::WithEntities)
 			: topicWithChat();

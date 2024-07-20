@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_widget.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "api/api_editing.h"
 #include "api/api_bot.h"
@@ -648,6 +650,14 @@ HistoryWidget::HistoryWidget(
 			updateHistoryGeometry();
 		});
 	}, lifetime());
+
+	RabbitSettings::JsonSettings::Events(
+		"sticker_size"
+	) | rpl::start_with_next([=] {
+		crl::on_main(this, [=] {
+			updateHistoryGeometry();
+			});
+		}, lifetime());
 
 	session().data().channelDifferenceTooLong(
 	) | rpl::filter([=](not_null<ChannelData*> channel) {
