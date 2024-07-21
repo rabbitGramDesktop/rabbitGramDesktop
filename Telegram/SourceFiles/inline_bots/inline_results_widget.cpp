@@ -37,7 +37,7 @@ Widget::Widget(
 , _contentHeight(_contentMaxHeight)
 , _scroll(this, st::inlineBotsScroll)
 , _innerRounding(Ui::PrepareCornerPixmaps(
-	ImageRoundRadius::LArge,
+	ImageRoundRadius::Large,
 	st::emojiPanBg))
 , _inlineRequestTimer([=] { onInlineRequest(); }) {
 	resize(QRect(0, 0, st::emojiPanWidth, _contentHeight).marginsAdded(innerPadding()).size());
