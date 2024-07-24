@@ -142,6 +142,7 @@ namespace Settings {
 			RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
+		SettingsMenuJsonSwitch(rtg_show_actions_time, show_actions_time);
 		SettingsMenuJsonSwitch(rtg_comma_after_mention, comma_after_mention);
 	}
 

@@ -8,6 +8,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "history/history_item.h"
 
 #include "rabbit/settings/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
@@ -70,6 +71,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "platform/platform_notifications_manager.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
 #include "styles/style_dialogs.h"
+#include "ui/text/format_values.h"
 
 namespace {
 
@@ -1130,11 +1132,18 @@ void HistoryItem::setCommentsItemId(FullMsgId id) {
 	}
 }
 
+QString GenerateServiceTime(TimeId date) {
+	return (date > 0)
+		? QString(" (%1)").arg(Ui::FormatDateTime(base::unixtime::parse(date)))
+		: QString();
+}
+
 void HistoryItem::setServiceText(PreparedServiceText &&prepared) {
 	AddComponents(HistoryServiceData::Bit());
 	_flags &= ~MessageFlag::HasTextLinks;
 	const auto data = Get<HistoryServiceData>();
 	const auto had = !_text.empty();
+	if (RabbitSettings::JsonSettings::GetBool("show_actions_time")) prepared.text.text += GenerateServiceTime(date());
 	_text = std::move(prepared.text);
 	data->textLinks = std::move(prepared.links);
 	if (had) {
