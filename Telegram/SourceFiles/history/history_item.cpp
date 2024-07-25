@@ -1133,9 +1133,15 @@ void HistoryItem::setCommentsItemId(FullMsgId id) {
 }
 
 QString GenerateServiceTime(TimeId date) {
-	return (date > 0)
-		? QString(" (%1)").arg(Ui::FormatDateTime(base::unixtime::parse(date)))
-		: QString();
+	if (date > 0)
+	{
+		auto lastTime = base::unixtime::parse(date);
+		auto format = RabbitSettings::JsonSettings::GetBool("show_seconds")
+			? QLocale().toString(lastTime.time(), QLocale::LongFormat).remove(" t")
+			: QLocale().toString(lastTime.time(), QLocale::ShortFormat);
+		return QString(" (%1)").arg(format);
+	}
+	return QString();
 }
 
 void HistoryItem::setServiceText(PreparedServiceText &&prepared) {
