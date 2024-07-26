@@ -31,6 +31,7 @@ def make_version_index():
 def set_installer_version():
     with open(os.path.join(tmp["script_path"], "Telegram/build/setup.iss"), "r") as f:
         content = f.read()
+        content = re.sub(r'#define MyAppVersion \".*\"', f'#define MyAppVersion "{tmp["version_str"]}"', content)
         content = re.sub(r'#define MyAppVersionFull \".*\"', f'#define MyAppVersionFull "{tmp["version_index"]}"', content)
     
     with open(os.path.join(tmp["script_path"], "Telegram/build/setup.iss"), "w") as f:
