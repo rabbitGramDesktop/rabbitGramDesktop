@@ -2014,8 +2014,7 @@ void HistoryInner::mouseDoubleClickEvent(QMouseEvent *e) {
 			mouseActionCancel();
 			switch (HistoryView::CurrentQuickAction()) {
 			case HistoryView::DoubleClickQuickAction::Reply: {
-				bool forceReact = view->data()->isPost() && view->data()->author()->isChannel();
-				if (forceReact) {
+				if (!Data::CanSendAnything(view->data()->history())) {
 					toggleFavoriteReaction(view);
 				} else {
 					_widget->replyToMessage(view->data());
