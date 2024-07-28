@@ -132,9 +132,6 @@ QSize UnwrappedMedia::countCurrentSize(int newWidth) {
 		if (via) {
 			via->resize(availw);
 		}
-		if (reply) {
-			[[maybe_unused]] int height = reply->resizeToWidth(availw);
-		}
 	}
 	return { newWidth, newHeight };
 }
