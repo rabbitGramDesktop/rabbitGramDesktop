@@ -694,6 +694,8 @@ bool Panel::createWebview(const Webview::ThemeParams &params) {
 			openInvoice(arguments);
 		} else if (command == "web_app_open_popup") {
 			openPopup(arguments);
+		} else if (command == "web_app_open_scan_qr_popup") {
+			openScanQrPopup(arguments);
 		} else if (command == "web_app_request_write_access") {
 			requestWriteAccess();
 		} else if (command == "web_app_request_phone") {
@@ -740,14 +742,16 @@ postEvent: function(eventType, eventData) {
 	setupProgressGeometry();
 
 	base::qt_signal_producer(
-		_widget->window()->windowHandle(),
-		&QWindow::activeChanged
-	) | rpl::filter([=] {
-		return _webview && _widget->window()->windowHandle()->isActive();
+		qApp,
+		&QGuiApplication::focusWindowChanged
+	) | rpl::filter([=](QWindow *focused) {
+		const auto handle = _widget->window()->windowHandle();
+		return _webview
+			&& !_webview->window.widget()->isHidden()
+			&& handle
+			&& (focused == handle);
 	}) | rpl::start_with_next([=] {
-		if (_webview && !_webview->window.widget()->isHidden()) {
-			_webview->window.focus();
-		}
+		_webview->window.focus();
 	}, _webview->lifetime);
 
 	return true;
@@ -913,6 +917,19 @@ void Panel::openPopup(const QJsonObject &args) {
 			? QJsonObject{ { u"button_id"_q, *result.id } }
 			: EventData());
 	}
+}
+
+void Panel::openScanQrPopup(const QJsonObject &args) {
+	const auto widget = _webview->window.widget();
+	[[maybe_unused]] const auto ok = Webview::ShowBlockingPopup({
+		.parent = widget ? widget->window() : nullptr,
+		.text = tr::lng_bot_no_scan_qr(tr::now),
+		.buttons = { {
+			.id = "ok",
+			.text = tr::lng_box_ok(tr::now),
+			.type = Webview::PopupArgs::Button::Type::Ok,
+		}},
+	});
 }
 
 void Panel::requestWriteAccess() {
@@ -1264,6 +1281,27 @@ void Panel::showBox(
 			}
 		}
 	}
+	const auto raw = box.data();
+
+	InvokeQueued(raw, [=] {
+		if (raw->window()->isActiveWindow()) {
+			// In case focus is somewhat in a native child window,
+			// like a webview, Qt glitches here with input fields showing
+			// focused state, but not receiving any keyboard input:
+			//
+			// window()->windowHandle()->isActive() == false.
+			//
+			// Steps were: SeparatePanel with a WebView2 child,
+			// some interaction with mouse inside the WebView2,
+			// so that WebView2 gets focus and active window state,
+			// then we call setSearchAllowed() and after animation
+			// is finished try typing -> nothing happens.
+			//
+			// With this workaround it works fine.
+			_widget->activateWindow();
+		}
+	});
+
 	_widget->showBox(
 		std::move(box),
 		LayerOption::KeepOther,
@@ -1326,8 +1364,10 @@ void Panel::invoiceClosed(const QString &slug, const QString &status) {
 		{ u"slug"_q, slug },
 		{ u"status"_q, status },
 	});
-	_widget->showAndActivate();
-	_hiddenForPayment = false;
+	if (_hiddenForPayment) {
+		_hiddenForPayment = false;
+		_widget->showAndActivate();
+	}
 }
 
 void Panel::hideForPayment() {

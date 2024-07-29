@@ -1,14 +1,14 @@
 #define MyAppShortName "rabbitGram"
 #define MyAppName "rabbitGram Desktop"
 #define MyAppPublisher "xmdnx"
-#define MyAppVersion "5.2"
+#define MyAppVersion "5.2.5"
 #define MyAppURL "https://t.me/rabbitGramUpdates"
 #define ReleasePath "C:\Users\xmdnusr\source\repos\rtgdesktopdev\out\Release"
 #define MyAppExeName "rabbitGram.exe"
 #define MyAppId "4356CE01-4137-4C55-9F8B-FB4EEBB6EC0C"
 #define CurrentYear GetDateTimeString('yyyy','','')
 #define MyBuildTarget "win64"
-#define MyAppVersionFull "5.2.3-25072024"
+#define MyAppVersionFull "5.2.5-29072024-beta"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -39,7 +39,12 @@ DisableDirPage=no
 DisableProgramGroupPage=no
 WizardStyle=modern
 
-#if MyBuildTarget == "win64"
+#if MyBuildTarget == "winarm"
+  ArchitecturesAllowed="arm64"
+  OutputBaseFilename=rtgdsetup-arm64.{#MyAppVersionFull}
+  #define ArchModulesFolder "arm64"
+  AppVerName={#MyAppName} {#MyAppVersion} arm64
+#elif MyBuildTarget == "win64"
   ArchitecturesAllowed="x64 arm64"
   ArchitecturesInstallIn64BitMode="x64 arm64"
   OutputBaseFilename=rtgdsetup-x64.{#MyAppVersionFull}
@@ -70,7 +75,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "{#ReleasePath}\rabbitGram.exe"; DestDir: "{app}"; Flags: ignoreversion
+#if MyBuildTarget != "winarm"
 Source: "{#ReleasePath}\{#ModulesFolder}\d3d\d3dcompiler_47.dll"; DestDir: "{app}\{#ModulesFolder}\d3d"; Flags: ignoreversion
+#endif
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
