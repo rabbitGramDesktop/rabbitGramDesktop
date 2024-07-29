@@ -20,6 +20,7 @@
 		"other": "Недавние стикеры: {count} стикеров"
 	},
     "rtg_chats_recent_stickers_limit_none": "Недавние стикеры: скрыть",
+    "rtg_show_actions_time": "Показывать время действий",
     "rtg_show_seconds": "Показывать время с секундами",
     "rtg_comma_after_mention": "Запятая после упоминания",
     "rtg_links": "Ссылки",
@@ -33,6 +34,7 @@
     "rtg_source_label": "GitHub",
     "rtg_nothing_here": "Здесь пока ничего нет...",
     "rtg_phone_hidden": "Скрыто",
+    "rtg_goto_first_message": "В начало",
     "rtg_open": "Открыть rabbitGram",
     "rtg_close": "Закрыть rabbitGram",
     "last_string": null

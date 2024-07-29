@@ -2014,8 +2014,7 @@ void HistoryInner::mouseDoubleClickEvent(QMouseEvent *e) {
 			mouseActionCancel();
 			switch (HistoryView::CurrentQuickAction()) {
 			case HistoryView::DoubleClickQuickAction::Reply: {
-				bool forceReact = view->data()->isPost() && view->data()->author()->isChannel();
-				if (forceReact) {
+				if (!Data::CanSendAnything(view->data()->history())) {
 					toggleFavoriteReaction(view);
 				} else {
 					_widget->replyToMessage(view->data());
@@ -2234,8 +2233,11 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		if (!item->isService()
 			&& peerIsChannel(itemId.peer)
 			&& !_peer->isMegagroup()) {
+			constexpr auto kMinViewsCount = 10;
 			if (const auto channel = _peer->asChannel()) {
-				if (channel->flags() & ChannelDataFlag::CanGetStatistics) {
+				if ((channel->flags() & ChannelDataFlag::CanGetStatistics)
+					|| (channel->canPostMessages()
+						&& item->viewsCount() >= kMinViewsCount)) {
 					auto callback = crl::guard(controller, [=] {
 						controller->showSection(
 							Info::Statistics::Make(channel, itemId, {}));

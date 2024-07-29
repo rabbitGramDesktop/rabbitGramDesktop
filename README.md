@@ -26,16 +26,20 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * Sticker size
 * Recent stickers limit
 * Show time with seconds
+* Chat actions time
 * Comma after mention
 ### Miscellanous
+* Go to first message
 * Spoof WebView as Android (type "rtgspoof" in settings, thx AyuGram)
 * Solar Icons (thx 480 Design)
+* Force react in channels on double-click
+* Improved UI
 
 ## Supported systems
 
 The latest version is available for
 
-* Windows 7 and above (x64)
+* Windows 7 and above (x64, installer and portable)
 
 You can build rabbitGram Desktop yourself using [build instructions][build_instructions]
 
@@ -48,7 +52,7 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 ## Special thanks to
 
 * [exteraGram (for some ideas)][exteragram]
-* Ayugram
+* AyuGram
 * [Kotatogram][kotatogram]
 * [Materialgram][materialgram]
 * [64Gram][64gram]
@@ -56,7 +60,6 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 [//]: # (LINKS)
 [telegram]: https://telegram.org
 [license]: LICENSE
-[etg_themes_repo]: https://github.com/xmdnx/exteraThemes/
 [win32]: docs/building-win.md
 [win64]: docs/building-win-x64.md
 [linux]: docs/building-linux.md
