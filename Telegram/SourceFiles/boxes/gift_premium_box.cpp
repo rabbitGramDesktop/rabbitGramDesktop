@@ -1014,6 +1014,7 @@ void GiftPremiumValidator::showChoosePeerBox(const QString &ref) {
 				if (users.empty()) {
 					show->showToast(
 						tr::lng_settings_gift_premium_choose(tr::now));
+					return;
 				}
 				const auto giftBox = show->show(
 					Box(GiftsBox, _controller, users, api, ref));
@@ -1694,9 +1695,13 @@ void AddCreditsHistoryEntryTable(
 	} else if (entry.peerType == Type::Fragment) {
 		AddTableRow(
 			table,
-			tr::lng_credits_box_history_entry_via(),
-			tr::lng_credits_box_history_entry_fragment(
-				Ui::Text::RichLangValue));
+			(entry.gift
+				? tr::lng_credits_box_history_entry_peer_in
+				: tr::lng_credits_box_history_entry_via)(),
+			(entry.gift
+				? tr::lng_credits_box_history_entry_anonymous
+				: tr::lng_credits_box_history_entry_fragment)(
+					Ui::Text::RichLangValue));
 	} else if (entry.peerType == Type::Ads) {
 		AddTableRow(
 			table,

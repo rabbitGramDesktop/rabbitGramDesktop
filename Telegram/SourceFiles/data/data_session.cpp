@@ -721,6 +721,8 @@ not_null<UserData*> Session::processUser(const MTPUser &data) {
 				result->botInfo->supportsAttachMenu = data.is_bot_attach_menu();
 				result->botInfo->supportsBusiness = data.is_bot_business();
 				result->botInfo->canEditInformation = data.is_bot_can_edit();
+				result->botInfo->activeUsers = data.vbot_active_users().value_or_empty();
+				result->botInfo->hasMainApp = data.is_bot_has_main_app();
 			} else {
 				result->setBotInfoVersion(-1);
 			}
@@ -4533,7 +4535,8 @@ void Session::serviceNotification(
 			MTPVector<MTPUsername>(),
 			MTPint(), // stories_max_id
 			MTPPeerColor(), // color
-			MTPPeerColor())); // profile_color
+			MTPPeerColor(), // profile_color
+			MTPint())); // bot_active_users
 	}
 	const auto history = this->history(PeerData::kServiceNotificationsId);
 	const auto insert = [=] {

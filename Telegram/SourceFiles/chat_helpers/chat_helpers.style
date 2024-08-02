@@ -284,6 +284,10 @@ stickersTrendingSubheaderFont: normalFont;
 stickersTrendingSubheaderFg: windowSubTextFg;
 stickersTrendingSubheaderTop: 31px;
 
+stickersHeaderBadgeFont: font(10px);
+stickersHeaderBadgeFontTop: 12px;
+stickersHeaderBadgeFontSkip: 12px;
+
 emojiPanButtonRight: 7px;
 emojiPanButtonTop: 8px;
 emojiPanButton: RoundButton(defaultActiveButton) {
@@ -1407,6 +1411,22 @@ editTagField: InputField(defaultInputField) {
 }
 editTagLimit: FlatLabel(defaultFlatLabel) {
 	textFg: windowSubTextFg;
+}
+
+editStickerSetNameField: InputField(defaultInputField) {
+	textMargins: margins(0px, 8px, 26px, 4px);
+	heightMin: 36px;
+	heightMax: 36px;
+	placeholderFg: placeholderFg;
+	placeholderFgActive: placeholderFgActive;
+	placeholderFgError: placeholderFgActive;
+	placeholderMargins: margins(2px, 0px, 2px, 0px);
+	placeholderScale: 0.;
+	placeholderFont: normalFont;
+}
+editStickerSetNameLoading: InfiniteRadialAnimation(defaultInfiniteRadialAnimation) {
+	color: lightButtonFg;
+	thickness: 2px;
 }
 
 paidStarIcon: icon {{ "settings/premium/star", creditsBg1 }};

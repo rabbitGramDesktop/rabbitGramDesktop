@@ -771,7 +771,7 @@ COPY --link --from=pipewire {{ LibrariesPath }}/pipewire-cache /
 RUN git init tg_owt \
 	&& cd tg_owt \
 	&& git remote add origin {{ GIT }}/desktop-app/tg_owt.git \
-	&& git fetch --depth=1 origin c0ba7b391c0fd1d408fc0d58f4fbecb68a6fcd55 \
+	&& git fetch --depth=1 origin 4a60ce1ab9fdb962004c6a959f682ace3db50cbd \
 	&& git reset --hard FETCH_HEAD \
 	&& git submodule update --init --recursive --depth=1 \
 	&& rm -rf .git \
@@ -800,6 +800,18 @@ FROM webrtc AS webrtc_debug
 RUN cmake --build out --config Debug --parallel \
 	&& find out -mindepth 1 -maxdepth 1 ! -name Debug -exec rm -rf {} \;
 {%- endif %}
+
+FROM builder AS ada
+RUN git clone -b v2.9.0 --depth=1 {{ GIT }}/ada-url/ada.git \
+	&& cd ada \
+	&& cmake -GNinja -B build . \
+		-D CMAKE_BUILD_TYPE=None \
+        -D ADA_TESTING=OFF \
+        -D ADA_TOOLS=OFF \
+	&& cmake --build build --parallel \
+	&& DESTDIR="{{ LibrariesPath }}/ada-cache" cmake --install build \
+	&& cd .. \
+	&& rm -rf ada
 
 FROM builder
 COPY --link --from=zlib {{ LibrariesPath }}/zlib-cache /
@@ -844,6 +856,7 @@ COPY --link --from=breakpad {{ LibrariesPath }}/breakpad-cache /
 COPY --link --from=webrtc {{ LibrariesPath }}/tg_owt tg_owt
 COPY --link --from=webrtc_release {{ LibrariesPath }}/tg_owt/out/Release tg_owt/out/Release
 COPY --link --from=libwebp {{ LibrariesPath }}/libwebp-cache /
+COPY --link --from=ada {{ LibrariesPath }}/ada-cache /
 
 {%- if DEBUG %}
 COPY --link --from=webrtc_debug {{ LibrariesPath }}/tg_owt/out/Debug tg_owt/out/Debug

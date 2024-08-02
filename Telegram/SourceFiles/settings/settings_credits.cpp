@@ -8,6 +8,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "settings/settings_credits.h"
 
 #include "api/api_credits.h"
+#include "boxes/gift_credits_box.h"
 #include "boxes/gift_premium_box.h"
 #include "core/click_handler_types.h"
 #include "data/data_file_origin.h"
@@ -289,7 +290,21 @@ void Credits::setupContent() {
 			Ui::StartFireworks(_parent);
 		}
 	};
-	FillCreditOptions(_controller->uiShow(), content, 0, paid);
+	const auto self = _controller->session().user();
+	FillCreditOptions(_controller->uiShow(), content, self, 0, paid);
+	{
+		Ui::AddSkip(content);
+		const auto giftButton = AddButtonWithIcon(
+			content,
+			tr::lng_credits_gift_button(),
+			st::settingsButtonLightNoIcon);
+		Ui::AddSkip(content);
+		Ui::AddDivider(content);
+		giftButton->setClickedCallback([=] {
+			Ui::ShowGiftCreditsBox(_controller, paid);
+		});
+	}
+
 	setupHistory(content);
 
 	Ui::ResizeFitChild(this, content);
