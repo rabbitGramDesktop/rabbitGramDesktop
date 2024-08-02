@@ -433,7 +433,7 @@ parts:
   webrtc:
     source: https://github.com/desktop-app/tg_owt.git
     source-depth: 1
-    source-commit: c0ba7b391c0fd1d408fc0d58f4fbecb68a6fcd55
+    source-commit: 4a60ce1ab9fdb962004c6a959f682ace3db50cbd
     plugin: cmake
     build-environment:
       - LDFLAGS: ${LDFLAGS:+$LDFLAGS} -s
@@ -488,3 +488,21 @@ parts:
     after:
       - ffmpeg
       - libjxl
+
+  ada:
+    source: https://github.com/ada-url/ada.git
+    source-depth: 1
+    source-tag: v2.9.0
+    plugin: cmake
+    build-environment:
+      - LDFLAGS: ${LDFLAGS:+$LDFLAGS} -s
+    cmake-generator: Ninja
+    cmake-parameters:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DADA_TESTING=OFF
+      - -DADA_TOOLS=OFF
+    prime:
+      - -./usr/include
+      - -./usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/cmake
+      - -./usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/*.a
