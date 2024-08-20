@@ -7,7 +7,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
-#include "base/object_ptr.h"
+template <typename Object>
+class object_ptr;
+
 #include "base/unique_qptr.h"
 
 namespace Ui {
