@@ -25,6 +25,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "core/click_handler_types.h"
 #include "main/main_session.h"
 #include "lottie/lottie_icon.h"
+#include "data/data_channel.h"
 #include "data/data_session.h"
 #include "data/data_message_reactions.h"
 #include "window/window_session_controller.h"
@@ -574,10 +575,14 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 	if (message->context() == Context::ShortcutMessages) {
 		result.flags |= Flag::Shortcut;
 	}
-	if (const auto msgsigned = item->Get<HistoryMessageSigned>()) {
-		 if (!msgsigned->isAnonymousRank) {
-			result.author = msgsigned->author;
-		 }
+	if (!item->isPost()
+		|| !item->hasRealFromId()
+		|| !item->history()->peer->asChannel()->signatureProfiles()) {
+		if (const auto msgsigned = item->Get<HistoryMessageSigned>()) {
+			if (!msgsigned->isAnonymousRank) {
+				result.author = msgsigned->author;
+			}
+		}
 	}
 	if (message->displayedEditDate()) {
 		result.flags |= Flag::Edited;

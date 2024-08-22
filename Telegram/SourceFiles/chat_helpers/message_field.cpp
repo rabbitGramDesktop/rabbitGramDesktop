@@ -1063,10 +1063,26 @@ base::unique_qptr<Ui::RpWidget> CreateDisabledFieldView(
 		st::historySendDisabled);
 	label->setAttribute(Qt::WA_TransparentForMouseEvents);
 	raw->setPointerCursor(false);
+
+	const auto &st = st::historyComposeField;
+
+	const auto metrics = QFontMetricsF(st.style.font->f);
+	const auto realAscent = int(base::SafeRound(metrics.ascent()));
+	const auto ascentAdd = st.style.font->ascent - realAscent;
+	const auto customFontMarginTop = ascentAdd;
+	const auto leading = qMax(metrics.leading(), qreal(0.0));
+	const auto adjustment = (metrics.ascent() + leading)
+		- ((st.style.font->height * 4) / 5);
+	const auto placeholderCustomFontSkip = int(base::SafeRound(-adjustment));
+
+	const auto margins = st.textMargins
+		+ st.placeholderMargins
+		+ QMargins(0, style::ConvertScale(4)
+			+ placeholderCustomFontSkip
+			+ customFontMarginTop, 0, 0);
+
 	raw->widthValue(
 	) | rpl::start_with_next([=](int width) {
-		const auto &st = st::historyComposeField;
-		const auto margins = (st.textMargins + st.placeholderMargins);
 		const auto available = width - margins.left() - margins.right();
 		const auto skip = st::historySendDisabledIconSkip;
 		label->resizeToWidth(available - skip);
@@ -1075,8 +1091,6 @@ base::unique_qptr<Ui::RpWidget> CreateDisabledFieldView(
 	raw->paintRequest(
 	) | rpl::start_with_next([=] {
 		auto p = QPainter(raw);
-		const auto &st = st::historyComposeField;
-		const auto margins = (st.textMargins + st.placeholderMargins);
 		const auto &icon = st::historySendDisabledIcon;
 		icon.paint(
 			p,
@@ -1126,10 +1140,8 @@ base::unique_qptr<Ui::RpWidget> CreateDisabledFieldView(
 			: list.back();
 		*toast = Ui::Toast::Show(parent, {
 			.text = { tr::lng_send_text_no_about(tr::now, lt_types, types) },
-			.st = &st::defaultMultilineToast,
+			.attach = RectPart::Bottom,
 			.duration = kTypesDuration,
-			.multiline = true,
-			.slideSide = RectPart::Bottom,
 		});
 	});
 	return result;
