@@ -49,9 +49,7 @@ void ParseLanguageData(
 		: LangDir() + (qsl("%1.json").arg(langCode));
 
 	QFile file(filename);
-	if (!file.exists()) {
-		return;
-	}
+	if (!file.exists()) return;
 	if (!file.open(QIODevice::ReadOnly)) {
 		LOG(("RabbitLang::Lang Info: file %1 could not be read.").arg(filename));
 		return;
@@ -86,18 +84,14 @@ void ParseLanguageData(
 
 	for (auto i = keyList.constBegin(), e = keyList.constEnd(); i != e; ++i) {
 		const auto key = *i;
-		if (key.startsWith("dummy_")) {
-			continue;
-		}
+		if (key.startsWith("dummy_")) continue;
 
 		const auto value = langKeys.constFind(key);
 
 		if ((*value).isString()) {
-
 			applyValue(key, (*value).toString());
 
 		} else if ((*value).isObject()) {
-
 			const auto keyPlurals = (*value).toObject();
 			const auto pluralList = keyPlurals.keys();
 
@@ -116,10 +110,9 @@ void ParseLanguageData(
 
 				applyValue(name, translation);
 			}
-		} else {
+		} else
 			LOG(("RabbitLang::Lang Info: wrong value for key %1 in file %2, string or object expected")
 				.arg(key).arg(filename));
-		}
 	}
 }
 
@@ -133,9 +126,7 @@ void UnpackDefault() {
 
 	for (auto language : langs) {
 		language.chop(5);
-		if (!neededLangs.contains(language)) {
-			continue;
-		}
+		if (!neededLangs.contains(language)) continue;
 
 		const auto path = langDir + language + ".default.json";
 		auto input = QFile(qsl(":/rtg_lang/%1.json").arg(language));
@@ -155,14 +146,10 @@ void UnpackDefault() {
 
 void Load(const QString &baseLangCode, const QString &langCode) {
 	BaseLangCode = baseLangCode;
-	if (BaseLangCode.endsWith("-raw")) {
-		BaseLangCode.chop(4);
-	}
+	if (BaseLangCode.endsWith("-raw")) BaseLangCode.chop(4);
 
 	LangCode = langCode.isEmpty() ? baseLangCode : langCode;
-	if (LangCode.endsWith("-raw")) {
-		LangCode.chop(4);
-	}
+	if (LangCode.endsWith("-raw")) LangCode.chop(4);
 
 	DefaultValues.clear();
 	CurrentValues.clear();
@@ -200,9 +187,8 @@ QString Translate(const QString &key, Var var1, Var var2, Var var3, Var var4) {
 					continue;
 				}
 				
-				if (phrase.at(i) == QChar('\\')) {
-					skipNext = true;
-				} else if (phrase.at(i) == QChar('{') && phrase.mid(i, key.length()) == key) {
+				if (phrase.at(i) == QChar('\\')) skipNext = true;
+				else if (phrase.at(i) == QChar('{') && phrase.mid(i, key.length()) == key) {
 					phrase.replace(i, key.length(), v.value);
 					break;
 				}
@@ -236,9 +222,8 @@ TextWithEntities TranslateWithEntities(const QString &key, EntVar var1, EntVar v
 					continue;
 				}
 				
-				if (phrase.text.at(i) == QChar('\\')) {
-					skipNext = true;
-				} else if (phrase.text.at(i) == QChar('{') && phrase.text.mid(i, key.length()) == key) {
+				if (phrase.text.at(i) == QChar('\\')) skipNext = true;
+				else if (phrase.text.at(i) == QChar('{') && phrase.text.mid(i, key.length()) == key) {
 					phrase.text.replace(i, key.length(), v.value.text);
 					const auto endOld = i + key.length();
 					const auto endNew = i + v.value.text.length();
@@ -247,20 +232,18 @@ TextWithEntities TranslateWithEntities(const QString &key, EntVar var1, EntVar v
 					if (endNew > endOld) {
 						const auto diff = endNew - endOld;
 						for (auto &entity : phrase.entities) {
-							if (entity.offset() > endOld) {
+							if (entity.offset() > endOld) 
 								entity.shiftRight(diff);
-							} else if (entity.offset() <= i && entity.offset() + entity.length() >= endOld) {
+							else if (entity.offset() <= i && entity.offset() + entity.length() >= endOld) 
 								entity.shrinkFromRight(-diff);
-							}
 						}
 					} else if (endNew < endOld) {
 						const auto diff = endOld - endNew;
 						for (auto &entity : phrase.entities) {
-							if (entity.offset() > endNew) {
+							if (entity.offset() > endNew)
 								entity.shiftLeft(diff);
-							} else if (entity.offset() <= i && entity.offset() + entity.length() >= endNew) {
+							else if (entity.offset() <= i && entity.offset() + entity.length() >= endNew) 
 								entity.shrinkFromRight(diff);
-							}
 						}
 					}
 
