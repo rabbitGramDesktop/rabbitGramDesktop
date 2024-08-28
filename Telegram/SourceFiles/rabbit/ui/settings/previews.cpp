@@ -14,6 +14,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "main/main_domain.h"
 #include "styles/style_rabbit_assets.h"
+#include "styles/style_chat.h"
 #include "ui/painter.h"
 #include "window/main_window.h"
 
@@ -68,14 +69,20 @@ void StickerSizePreview::paintEvent(QPaintEvent* e) {
     Painter p(this);
     PainterHighQualityEnabler hq(p);
 
-    auto size = QSize(RabbitSettings::JsonSettings::GetInt("sticker_size"), RabbitSettings::JsonSettings::GetInt("sticker_size"));
+    auto size = QSize(RabbitSettings::JsonSettings::GetInt("sticker_size"), RabbitSettings::JsonSettings::GetInt("sticker_size") * 0.7);
+    auto radius = []() -> qreal {
+        switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+        case 1: return st::bubbleRadiusSmall;
+        case 2: return st::bubbleRadiusLarge;
+        default: return 0;
+        }
+    };
 
     p.setPen(Qt::NoPen);
     p.setBrush(st::rndPreviewFill);
     p.drawRoundedRect(
         QRect(QPoint(0, 0), size),
-        st::stickerPreviewTimeHeight / 2.,
-        st::stickerPreviewTimeHeight / 2.);
+        radius(), radius());
 
     p.setBrush(QBrush(st::rndSkeletonFill));
     p.drawRoundedRect(

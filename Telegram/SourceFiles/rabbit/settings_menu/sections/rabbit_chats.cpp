@@ -70,6 +70,40 @@ namespace Settings {
 			object_ptr<StickerSizePreview>(container),
 			st::defaultSubsectionTitlePadding);
 
+		const auto stickerShapeLabel = container->add(
+			object_ptr<Ui::LabelSimple>(
+				container,
+				st::settingsAudioVolumeLabel),
+			st::settingsAudioVolumeLabelPadding);
+		const auto stickerShapeSlider = container->add(
+			object_ptr<Ui::MediaSlider>(
+				container,
+				st::settingsAudioVolumeSlider),
+			st::settingsAudioVolumeSliderPadding);
+		const auto updateStickerShapeLabel = [=](int value) {
+			const auto shape = [=](int val) -> QString {
+				switch (val) {
+				case 1: return ktr("rtg_chats_sticker_shape_small");
+				case 2: return ktr("rtg_chats_sticker_shape_large");
+				default: return ktr("rtg_chats_sticker_shape_none");
+				}
+			};
+			stickerShapeLabel->setText(ktr("rtg_chats_sticker_shape", { "shape", shape(value) }));
+		};
+		const auto updateStickerShape = [=](int value) {
+			updateStickerShapeLabel(value);
+			stickerPreview->repaint();
+			RabbitSettings::JsonSettings::Set("sticker_shape", value);
+			RabbitSettings::JsonSettings::Write();
+		};
+		stickerShapeSlider->resize(st::settingsAudioVolumeSlider.seekSize);
+		stickerShapeSlider->setPseudoDiscrete(
+			3,
+			[](int val) { return val; },
+			RabbitSettings::JsonSettings::GetInt("sticker_shape"),
+			updateStickerShape);
+		updateStickerShapeLabel(RabbitSettings::JsonSettings::GetInt("sticker_shape"));
+
 		const auto stickerSizeLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
 				container,

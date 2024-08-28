@@ -243,6 +243,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::BoolSetting,
 		.defaultValue = true, }},
 	//   Chats
+	{ "sticker_shape", {
+		.type = SettingType::IntSetting,
+		.defaultValue = 0,
+		.limitHandler = IntLimit(0, 2, 0), }},
 	{ "sticker_size", {
 		.type = SettingType::IntSetting,
 		.defaultValue = 170,
