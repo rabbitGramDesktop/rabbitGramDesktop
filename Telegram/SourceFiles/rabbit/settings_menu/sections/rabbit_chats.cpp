@@ -64,45 +64,11 @@ namespace Settings {
 	}
 
 	void RabbitChats::SetupChats(not_null<Ui::VerticalLayout *> container) {
-		Ui::AddSubsectionTitle(container, rktr("rtg_settings_chats"));
+		Ui::AddSubsectionTitle(container, rktr("rtg_chats_stickers"));
 
 		const auto stickerPreview = container->add(
 			object_ptr<StickerSizePreview>(container),
 			st::defaultSubsectionTitlePadding);
-
-		const auto stickerShapeLabel = container->add(
-			object_ptr<Ui::LabelSimple>(
-				container,
-				st::settingsAudioVolumeLabel),
-			st::settingsAudioVolumeLabelPadding);
-		const auto stickerShapeSlider = container->add(
-			object_ptr<Ui::MediaSlider>(
-				container,
-				st::settingsAudioVolumeSlider),
-			st::settingsAudioVolumeSliderPadding);
-		const auto updateStickerShapeLabel = [=](int value) {
-			const auto shape = [=](int val) -> QString {
-				switch (val) {
-				case 1: return ktr("rtg_chats_sticker_shape_small");
-				case 2: return ktr("rtg_chats_sticker_shape_large");
-				default: return ktr("rtg_chats_sticker_shape_none");
-				}
-			};
-			stickerShapeLabel->setText(ktr("rtg_chats_sticker_shape", { "shape", shape(value) }));
-		};
-		const auto updateStickerShape = [=](int value) {
-			updateStickerShapeLabel(value);
-			stickerPreview->repaint();
-			RabbitSettings::JsonSettings::Set("sticker_shape", value);
-			RabbitSettings::JsonSettings::Write();
-		};
-		stickerShapeSlider->resize(st::settingsAudioVolumeSlider.seekSize);
-		stickerShapeSlider->setPseudoDiscrete(
-			3,
-			[](int val) { return val; },
-			RabbitSettings::JsonSettings::GetInt("sticker_shape"),
-			updateStickerShape);
-		updateStickerShapeLabel(RabbitSettings::JsonSettings::GetInt("sticker_shape"));
 
 		const auto stickerSizeLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
@@ -160,6 +126,20 @@ namespace Settings {
 			RabbitSettings::JsonSettings::GetInt("recent_stickers_limit"),
 			updateRecentStickersLimitHeight);
 		updateRecentStickersLimitLabel(RabbitSettings::JsonSettings::GetInt("recent_stickers_limit"));
+
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
+		Ui::AddSubsectionTitle(container, rktr("rtg_chats_sticker_shape"));
+
+		const auto stickerShapePicker = container->add(
+			object_ptr<StickerShapePicker>(container),
+			st::defaultSubsectionTitlePadding);
+
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
+		Ui::AddSubsectionTitle(container, rktr("rtg_settings_chats"));
 
 		AddButtonWithIcon(
 			container,

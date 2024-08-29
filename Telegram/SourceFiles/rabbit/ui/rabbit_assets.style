@@ -31,3 +31,11 @@ stickerSpacefillerHeight: 30px;
 
 stickerPreviewSize: 220px;
 stickerPreviewMargin: 8px;
+
+stickerShapeBoxWidth: 348px;
+stickerShapeBoxHeight: 74px;
+stickerShapeMargins: 20px;
+stickerShapeVariantCardWidth: 102px;
+stickerShapeVariantCardHeight: 70px;
+stickerShapePadding: 10px;
+stickerShapePenWidth: 2px;

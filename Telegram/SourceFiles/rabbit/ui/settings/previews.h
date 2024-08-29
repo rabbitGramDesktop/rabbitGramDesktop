@@ -26,3 +26,13 @@ public:
 protected:
 	void paintEvent(QPaintEvent* e) override;
 };
+
+class StickerShapePicker : public Ui::RpWidget
+{
+public:
+	StickerShapePicker(QWidget* parent);
+
+protected:
+	void paintEvent(QPaintEvent* e) override;
+	void mousePressEvent(QMouseEvent *e) override;
+};
