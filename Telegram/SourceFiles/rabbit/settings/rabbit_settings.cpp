@@ -243,10 +243,6 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::BoolSetting,
 		.defaultValue = true, }},
 	//   Chats
-	{ "sticker_shape", {
-		.type = SettingType::IntSetting,
-		.defaultValue = 0,
-		.limitHandler = IntLimit(0, 2, 0), }},
 	{ "sticker_size", {
 		.type = SettingType::IntSetting,
 		.defaultValue = 170,
@@ -255,6 +251,14 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::IntSetting,
 		.defaultValue = 20,
 		.limitHandler = IntLimit(0, 200, 20), }},
+	{ "sticker_shape", {
+		.type = SettingType::IntSetting,
+		.defaultValue = 0,
+		.limitHandler = IntLimit(0, 2, 0), }},
+	{ "bubble_radius", {
+		.type = SettingType::IntSetting,
+		.defaultValue = 25,
+		.limitHandler = IntLimit(0, 25, 25), }},
 	{ "show_seconds", {
 		.type = SettingType::BoolSetting,
 		.defaultValue  = false, }},
