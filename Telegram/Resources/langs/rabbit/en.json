@@ -10,6 +10,11 @@
     "rtg_general_roundness": "Single Corner Radius",
     "rtg_sidebar_editor": "Sidebar editor",
     "rtg_settings_chats": "Chats",
+    "rtg_chats_stickers": "Stickers",
+    "rtg_chats_sticker_shape": "Stickers shape",
+    "rtg_chats_sticker_shape_none": "square",
+    "rtg_chats_sticker_shape_small": "rounded",
+    "rtg_chats_sticker_shape_large": "message",
     "rtg_chats_sticker_size": "Stickers size: {pixels}px",
     "rtg_chats_recent_stickers_limit": {
 		"zero": "Recent stickers: show {count} stickers",
@@ -20,6 +25,7 @@
 		"other": "Recent stickers: show {count} stickers"
 	},
 	"rtg_chats_recent_stickers_limit_none": "Recent stickers: hide all",
+    "rtg_chats_bubble_radius": "Message bubble radius: {value}",
     "rtg_show_actions_time": "Show actions time",
     "rtg_show_seconds": "Show time with seconds",
     "rtg_comma_after_mention": "Add comma after mention",

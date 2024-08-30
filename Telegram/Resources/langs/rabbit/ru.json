@@ -10,6 +10,11 @@
     "rtg_general_roundness": "Единое закругление",
     "rtg_sidebar_editor": "Редактор бокового меню",
     "rtg_settings_chats": "Чаты",
+    "rtg_chats_stickers": "Стикеры",
+    "rtg_chats_sticker_shape": "Форма стикеров",
+    "rtg_chats_sticker_shape_none": "не закруглять",
+    "rtg_chats_sticker_shape_small": "закруглённая",
+    "rtg_chats_sticker_shape_large": "сообщение",
     "rtg_chats_sticker_size": "Размер стикеров: {pixels}px",
     "rtg_chats_recent_stickers_limit": {
 		"zero": "Недавние стикеры: {count} стикеров",
@@ -20,6 +25,7 @@
 		"other": "Недавние стикеры: {count} стикеров"
 	},
     "rtg_chats_recent_stickers_limit_none": "Недавние стикеры: скрыть",
+    "rtg_chats_bubble_radius": "Закругление сообщений: {value}",
     "rtg_show_actions_time": "Показывать время действий",
     "rtg_show_seconds": "Показывать время с секундами",
     "rtg_comma_after_mention": "Запятая после упоминания",

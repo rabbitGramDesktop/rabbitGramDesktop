@@ -229,9 +229,24 @@ void Sticker::draw(
 		Painter &p,
 		const PaintContext &context,
 		const QRect &r) {
+	PainterHighQualityEnabler hq(p);
+	
 	if (!customEmojiPart()) {
 		_parent->clearCustomEmojiRepaint();
 	}
+	
+	auto radius = []() -> qreal {
+		switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+			case 1: return st::bubbleRadiusSmall;
+			case 2: return st::bubbleRadiusLarge;
+			default: return 0;
+		}
+	};
+	
+	p.save();
+	QPainterPath clipPath;
+	clipPath.addRoundedRect(r, radius(), radius());
+	p.setClipPath(clipPath);
 
 	ensureDataMediaCreated();
 	if (readyToDrawAnimationFrame()) {
@@ -241,6 +256,8 @@ void Sticker::draw(
 		|| !paintPixmap(p, context, r)) {
 		paintPath(p, context, r);
 	}
+
+	p.restore();
 }
 
 ClickHandlerPtr Sticker::link() {
@@ -265,6 +282,8 @@ void Sticker::paintAnimationFrame(
 		Painter &p,
 		const PaintContext &context,
 		const QRect &r) {
+	PainterHighQualityEnabler hq(p);
+	
 	const auto colored = (customEmojiPart() && _data->emojiUsesTextColor())
 		? ComputeEmojiTextColor(context)
 		: (context.selected() && !_nextLastDiceFrame)
@@ -295,6 +314,20 @@ void Sticker::paintAnimationFrame(
 			context.st->msgStickerOverlay()->c)
 		: image;
 	const auto size = prepared.size() / style::DevicePixelRatio();
+
+	auto radius = []() -> qreal {
+		switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+		case 1: return st::bubbleRadiusSmall;
+		case 2: return st::bubbleRadiusLarge;
+		default: return 0;
+		}
+	};
+	
+	p.save();
+	QPainterPath clipPath;
+	clipPath.addRoundedRect(r, radius(), radius());
+	p.setClipPath(clipPath);
+	
 	p.drawImage(
 		QRect(
 			QPoint(
@@ -305,6 +338,8 @@ void Sticker::paintAnimationFrame(
 	if (!_lastDiceFrame.isNull()) {
 		return;
 	}
+
+	p.restore();
 
 	const auto count = _player->framesCount();
 	_frameIndex = frame.index;
@@ -336,6 +371,8 @@ bool Sticker::paintPixmap(
 		Painter &p,
 		const PaintContext &context,
 		const QRect &r) {
+	PainterHighQualityEnabler hq(p);
+	
 	const auto pixmap = paintedPixmap(context);
 	if (pixmap.isNull()) {
 		return false;
@@ -354,7 +391,23 @@ bool Sticker::paintPixmap(
 		p.scale(-1., 1.);
 		p.translate(-middle);
 	}
+
+	auto radius = []() -> qreal {
+		switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+		case 1: return st::bubbleRadiusSmall;
+		case 2: return st::bubbleRadiusLarge;
+		default: return 0;
+		}
+	};
+	
+	p.save();
+	QPainterPath clipPath;
+	clipPath.addRoundedRect(r, radius(), radius());
+	p.setClipPath(clipPath);
+	
 	p.drawPixmap(position, pixmap);
+	p.restore();
+	
 	if (mirror) {
 		p.restore();
 	}

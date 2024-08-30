@@ -9,6 +9,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/chat/chat_style.h"
 #include "base/options.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "ui/chat/chat_theme.h"
 #include "ui/painter.h"
 #include "ui/ui_utility.h"
@@ -33,14 +35,7 @@ int BubbleRadiusSmall() {
 }
 
 int BubbleRadiusLarge() {
-	static const auto result = [] {
-		if (UseSmallMsgBubbleRadius.value()) {
-			return st::bubbleRadiusSmall;
-		} else {
-			return st::bubbleRadiusLarge;
-		}
-	}();
-	return result;
+	return RabbitSettings::JsonSettings::GetInt("bubble_radius") * .04 * st::bubbleRadiusLarge;
 }
 
 int MsgFileThumbRadiusSmall() {

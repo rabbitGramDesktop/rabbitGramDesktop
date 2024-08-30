@@ -91,9 +91,11 @@ private:
 };
 
 inline QString MakeMapKey(const QString &key, uint64 accountId, bool isTestAccount) {
-	return (accountId == 0)	? key : key
-				+ (isTestAccount ? qsl(":test_") : qsl(":"))
-				+ QString::number(accountId);
+	return (accountId == 0)
+		? key
+		: key
+			+ (isTestAccount ? qsl(":test_") : qsl(":"))
+			+ QString::number(accountId);
 }
 
 QVariantMap GetAllWithPending(const QString &key);
@@ -119,18 +121,13 @@ using CheckHandler = Fn<QVariant(QVariant)>;
 
 CheckHandler IntLimit(int min, int max, int defaultValue) {
 	return [=] (QVariant value) -> QVariant {
-		if (value.canConvert<int>()) {
-			auto intValue = value.toInt();
-			if (intValue < min) {
-				return min;
-			} else if (intValue > max) {
-				return max;
-			} else {
-				return value;
-			}
-		} else {
-			return defaultValue;
-		}
+		return (value.canConvert<int>())
+			? (value.toInt() < min)
+				? min
+				: (value.toInt() > max)
+					? max
+					: value
+			: defaultValue;
 	};
 }
 
@@ -140,16 +137,11 @@ inline CheckHandler IntLimit(int min, int max) {
 
 CheckHandler IntLimitMin(int min) {
 	return [=] (QVariant value) -> QVariant {
-		if (value.canConvert<int>()) {
-			auto intValue = value.toInt();
-			if (intValue < min) {
-				return min;
-			} else {
-				return value;
-			}
-		} else {
-			return min;
-		}
+		return (value.canConvert<int>())
+			? (value.toInt() < min)
+				? min
+				: value
+			: min;
 	};
 }
 
@@ -179,30 +171,6 @@ struct Definition {
 };
 
 const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
-
-	// Non-stored settings
-
-	// To build your version of rabbitGram Desktop you're required to provide
-	// your own 'api_id' and 'api_hash' for the Telegram API access.
-	//
-	// How to obtain your 'api_id' and 'api_hash' is described here:
-	// https://core.telegram.org/api/obtaining_api_id
-	//
-	// By default rabbitGram Desktop provides empty 'api_id' and 'api_hash'
-	// since you can set it them in runtime. They can be set with
-	// TDESKTOP_API_ID and TDESKTOP_API_HASH environment variables.
-	// You must set both variables for it to work.
-	//
-	// As an alternative, you can use -api-id <id> and -api_hash <hash>
-	// start parameters. Note that environment variables have priority
-	// over start parameters, so you should use -no-env-api if you don't
-	// want them. And as with environment variables, both -api-id and
-	// -api_hash must be set for it to work.
-	//
-	// If 'api_id' and 'api_hash' are empty, and they're not set by any
-	// of these parameters, you won't be able to connect to Telegram at all.
-	// Sessions created on TDesktop + forks (including rabbitGram Desktop) might
-	// work, but it could be risky, so be careful with it.
 	{ "api_id", {
 		.storage = SettingStorage::None,
 		.type = SettingType::IntSetting,
@@ -283,6 +251,14 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::IntSetting,
 		.defaultValue = 20,
 		.limitHandler = IntLimit(0, 200, 20), }},
+	{ "sticker_shape", {
+		.type = SettingType::IntSetting,
+		.defaultValue = 0,
+		.limitHandler = IntLimit(0, 2, 0), }},
+	{ "bubble_radius", {
+		.type = SettingType::IntSetting,
+		.defaultValue = 25,
+		.limitHandler = IntLimit(0, 25, 25), }},
 	{ "show_seconds", {
 		.type = SettingType::BoolSetting,
 		.defaultValue  = false, }},
@@ -302,7 +278,7 @@ using OldOptionKey = QString;
 using NewOptionKey = QString;
 
 const std::map<OldOptionKey, NewOptionKey, std::greater<OldOptionKey>> ReplacedOptionsMap {
-	{ "adaptive_baloons", "adaptive_bubbles" },
+
 };
 
 QString DefaultFilePath() {
@@ -315,24 +291,18 @@ QString CustomFilePath() {
 
 bool DefaultFileIsValid() {
 	QFile file(DefaultFilePath());
-	if (!file.open(QIODevice::ReadOnly)) {
-		return false;
-	}
+	if (!file.open(QIODevice::ReadOnly)) return false;
 	auto error = QJsonParseError{ 0, QJsonParseError::NoError };
 	const auto document = QJsonDocument::fromJson(
 		base::parse::stripComments(file.readAll()),
 		&error);
 	file.close();
 
-	if (error.error != QJsonParseError::NoError || !document.isObject()) {
-		return false;
-	}
+	if (error.error != QJsonParseError::NoError || !document.isObject()) return false;
 	const auto settings = document.object();
 
 	const auto version = settings.constFind(qsl("version"));
-	if (version == settings.constEnd() || (*version).toInt() != AppVersion) {
-		return false;
-	}
+	if (version == settings.constEnd() || (*version).toInt() != AppVersion) return false;
 
 	return true;
 }
@@ -341,9 +311,8 @@ void WriteDefaultCustomFile() {
 	const auto path = CustomFilePath();
 	auto input = QFile(":/misc/default_rabbit-settings-custom.json");
 	auto output = QFile(path);
-	if (input.open(QIODevice::ReadOnly) && output.open(QIODevice::WriteOnly)) {
+	if (input.open(QIODevice::ReadOnly) && output.open(QIODevice::WriteOnly)) 
 		output.write(input.readAll());
-	}
 }
 
 QByteArray GenerateSettingsJson(bool areDefault = false) {
@@ -355,9 +324,8 @@ QByteArray GenerateSettingsJson(bool areDefault = false) {
 			QStringList &keyParts,
 			const Definition &def) -> QJsonValueRef {
 		const auto firstKey = keyParts.takeFirst();
-		if (!settings.contains(firstKey)) {
+		if (!settings.contains(firstKey)) 
 			settings.insert(firstKey, QJsonObject());
-		}
 		auto resultRef = settings[firstKey];
 		for (const auto &key : keyParts) {
 			auto referenced = resultRef.toObject();
@@ -395,9 +363,7 @@ QByteArray GenerateSettingsJson(bool areDefault = false) {
 	};
 
 	const auto getAccountValue = [=] (const QString &key) -> QJsonValue {
-		if (areDefault) {
-			return QJsonObject();
-		}
+		if (areDefault) return QJsonObject();
 
 		auto values = GetAllWithPending(key);
 		auto resultObject = QJsonObject();
@@ -420,9 +386,7 @@ QByteArray GenerateSettingsJson(bool areDefault = false) {
 	};
 
 	for (const auto &[key, def] : DefinitionMap) {
-		if (def.storage == SettingStorage::None) {
-			continue;
-		}
+		if (def.storage == SettingStorage::None) continue;
 
 		auto parts = key.split(QChar('/'));
 		auto value = (def.scope == SettingScope::Account)
@@ -434,14 +398,11 @@ QByteArray GenerateSettingsJson(bool areDefault = false) {
 			auto referenced = ref.toObject();
 			referenced.insert(lastKey, value);
 			ref = referenced;
-		} else {
-			settings.insert(key, value);
-		}
+		} else settings.insert(key, value);
 	}
 
-	if (areDefault) {
+	if (areDefault) 
 		settings.insert(qsl("version"), QString::number(AppVersion));
-	}
 
 	auto document = QJsonDocument();
 	document.setObject(settings);
@@ -461,12 +422,8 @@ Manager::Manager()
 }
 
 void Manager::load() {
-	if (!DefaultFileIsValid()) {
-		writeDefaultFile();
-	}
-	if (!readCustomFile()) {
-		WriteDefaultCustomFile();
-	}
+	if (!DefaultFileIsValid()) writeDefaultFile();
+	if (!readCustomFile()) WriteDefaultCustomFile();
 }
 
 void Manager::fill() {
@@ -478,23 +435,19 @@ void Manager::fill() {
 	};
 
 	for (const auto &[key, def] : DefinitionMap) {
-		if (def.scope != SettingScope::Global) {
-			continue;
-		}
+		if (def.scope != SettingScope::Global) continue;
 
 		auto defaultValue = def.defaultValue;
 		if (!defaultValue.isValid()) {
-			if (def.type == SettingType::BoolSetting) {
+			if (def.type == SettingType::BoolSetting)
 				defaultValue = false;
-			} else if (def.type == SettingType::IntSetting) {
+			else if (def.type == SettingType::IntSetting)
 				defaultValue = 0;
-			} else if (def.type == SettingType::QStringSetting) {
+			else if (def.type == SettingType::QStringSetting)
 				defaultValue = QString();
-			} else if (def.type == SettingType::QJsonArraySetting) {
+			else if (def.type == SettingType::QJsonArraySetting)
 				defaultValue = QJsonArray();
-			} else {
-				continue;
-			}
+			else continue;
 		}
 
 		addDefaultValue(key, defaultValue);
@@ -505,9 +458,8 @@ void Manager::write(bool force) {
 	if (force && _jsonWriteTimer.isActive()) {
 		_jsonWriteTimer.cancel();
 		writeTimeout();
-	} else if (!force && !_jsonWriteTimer.isActive()) {
+	} else if (!force && !_jsonWriteTimer.isActive())
 		_jsonWriteTimer.callOnce(kWriteJsonTimeout);
-	}
 }
 
 QVariant Manager::get(const QString &key, uint64 accountId, bool isTestAccount) {
@@ -556,9 +508,7 @@ QVariantMap Manager::getAllWithPending(const QString &key) {
 
 	for (auto i = _settingsHashMap.constBegin(); i != _settingsHashMap.constEnd(); ++i) {
 		const auto mapKey = i.key();
-		if (!mapKey.startsWith(prefix)) {
-			continue;
-		}
+		if (!mapKey.startsWith(prefix)) continue;
 
 		const auto accountKey = mapKey.mid(prefix.size());
 		resultMap.insert(accountKey, i.value());
@@ -566,9 +516,7 @@ QVariantMap Manager::getAllWithPending(const QString &key) {
 
 	for (auto i = _defaultSettingsHashMap.constBegin(); i != _defaultSettingsHashMap.constEnd(); ++i) {
 		const auto mapKey = i.key();
-		if (!mapKey.startsWith(prefix)) {
-			continue;
-		}
+		if (!mapKey.startsWith(prefix)) continue;
 
 		const auto accountKey = mapKey.mid(prefix.size());
 		resultMap.insert(accountKey, i.value());
@@ -644,42 +592,30 @@ void Manager::resetAfterRestart(const QString &key, uint64 accountId, bool isTes
 
 bool Manager::readCustomFile() {
 	QFile file(CustomFilePath());
-	if (!file.exists()) {
-		return false;
-	}
-	if (!file.open(QIODevice::ReadOnly)) {
-		return true;
-	}
+	if (!file.exists()) return false;
+	if (!file.open(QIODevice::ReadOnly)) return true;
 	auto error = QJsonParseError{ 0, QJsonParseError::NoError };
 	const auto document = QJsonDocument::fromJson(
 		base::parse::stripComments(file.readAll()),
 		&error);
 	file.close();
 
-	if (error.error != QJsonParseError::NoError) {
-		return true;
-	} else if (!document.isObject()) {
-		return true;
-	}
+	if (error.error != QJsonParseError::NoError || !document.isObject()) return true;
 	const auto settings = document.object();
 
-	if (settings.isEmpty()) {
-		return true;
-	}
+	if (settings.isEmpty()) return true;
 
 	const auto getObjectValue = [&settings] (
 			QStringList &keyParts,
 			const Definition &def) -> QJsonValue {
 		const auto firstKey = keyParts.takeFirst();
-		if (!settings.contains(firstKey)) {
+		if (!settings.contains(firstKey))
 			return QJsonValue();
-		}
 		auto resultRef = settings.value(firstKey);
 		for (const auto &key : keyParts) {
 			auto referenced = resultRef.toObject();
-			if (!referenced.contains(key)) {
+			if (!referenced.contains(key))
 				return QJsonValue();
-			}
 			resultRef = referenced.value(key);
 		}
 		return resultRef;
@@ -695,13 +631,10 @@ bool Manager::readCustomFile() {
 				uint64,
 				bool)> callback) {
 
-		if (val.isUndefined()) {
-			return;
-		} else if (def.scope == SettingScope::Account && val.isObject()) {
+		if (val.isUndefined()) return;
+		else if (def.scope == SettingScope::Account && val.isObject()) {
 			const auto accounts = val.toObject();
-			if (accounts.isEmpty()) {
-				return;
-			}
+			if (accounts.isEmpty()) return;
 
 			for (auto i = accounts.constBegin(); i != accounts.constEnd(); ++i) {
 				auto optionKey = i.key();
@@ -713,9 +646,7 @@ bool Manager::readCustomFile() {
 				auto accountId = optionKey.toULongLong();
 				callback(key, def, i.value(), accountId, (accountId == 0) ? false : isTestAccount);
 			}
-		} else {
-			callback(key, def, val, 0, false);
-		}
+		} else callback(key, def, val, 0, false);
 	};
 
 	const auto setValue = [this] (
@@ -760,65 +691,37 @@ bool Manager::readCustomFile() {
 
 	for (const auto &[oldkey, newkey] : ReplacedOptionsMap) {
 		const auto &defIterator = DefinitionMap.find(newkey);
-		if (defIterator == DefinitionMap.end()) {
-			continue;
-		}
+		if (defIterator == DefinitionMap.end()) continue;
 		auto parts = oldkey.split(QChar('/'));
 		const auto val = (parts.size() > 1)
 							? getObjectValue(parts, defIterator->second)
 							: settings.value(oldkey);
 
-		if (!val.isUndefined()) {
-			prepareAccountOptions(newkey, defIterator->second, val, setValue);
-		}
+		if (!val.isUndefined()) prepareAccountOptions(newkey, defIterator->second, val, setValue);
 	}
 
 	for (const auto &[key, def] : DefinitionMap) {
-		if (def.storage == SettingStorage::None) {
-			continue;
-		}
+		if (def.storage == SettingStorage::None) continue;
 		auto parts = key.split(QChar('/'));
 		const auto val = (parts.size() > 1)
 							? getObjectValue(parts, def)
 							: settings.value(key);
 
-		if (!val.isUndefined()) {
-			prepareAccountOptions(key, def, val, setValue);
-		}
+		if (!val.isUndefined()) prepareAccountOptions(key, def, val, setValue);
 	}
 	return true;
 }
 
 void Manager::writeDefaultFile() {
 	auto file = QFile(DefaultFilePath());
-	if (!file.open(QIODevice::WriteOnly)) {
-		return;
-	}
-	const char *defaultHeader = R"HEADER(
-// This is a list of default options for rabbitGram Desktop
-// Please don't modify it, its content is not used in any way
-// You can place your own options in the 'rabbit-settings-custom.json' file
-
-)HEADER";
-	file.write(defaultHeader);
+	if (!file.open(QIODevice::WriteOnly)) return;
 	file.write(GenerateSettingsJson(true));
 }
 
 void Manager::writeCurrentSettings() {
 	auto file = QFile(CustomFilePath());
-	if (!file.open(QIODevice::WriteOnly)) {
-		return;
-	}
-	if (_jsonWriteTimer.isActive()) {
-		writing();
-	}
-	const char *customHeader = R"HEADER(
-// This file was automatically generated from current settings
-// It's better to edit it with app closed, so there will be no rewrites
-// You should restart app to see changes
-
-)HEADER";
-	file.write(customHeader);
+	if (!file.open(QIODevice::WriteOnly)) return;
+	if (_jsonWriteTimer.isActive()) writing();
 	file.write(GenerateSettingsJson());
 }
 
@@ -832,26 +735,22 @@ void Manager::writing() {
 
 void Start() {
 	if (Data) return;
-
 	Data = std::make_unique<Manager>();
 	Data->fill();
 }
 
 void Load() {
 	if (!Data) return;
-
 	Data->load();
 }
 
 void Write() {
 	if (!Data) return;
-
 	Data->write();
 }
 
 void Finish() {
 	if (!Data) return;
-
 	Data->write(true);
 }
 
@@ -873,25 +772,21 @@ rpl::producer<QString> EventsWithPending(const QString &key, uint64 accountId, b
 
 void Set(const QString &key, QVariant value, uint64 accountId, bool isTestAccount) {
 	if (!Data) return;
-
 	Data->set(key, value, accountId, isTestAccount);
 }
 
 void SetAfterRestart(const QString &key, QVariant value, uint64 accountId, bool isTestAccount) {
 	if (!Data) return;
-
 	Data->setAfterRestart(key, value, accountId, isTestAccount);
 }
 
 void Reset(const QString &key, uint64 accountId, bool isTestAccount) {
 	if (!Data) return;
-
 	Data->reset(key, accountId, isTestAccount);
 }
 
 void ResetAfterRestart(const QString &key, uint64 accountId, bool isTestAccount) {
 	if (!Data) return;
-
 	Data->resetAfterRestart(key, accountId, isTestAccount);
 }
 
