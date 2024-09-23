@@ -13,6 +13,7 @@ namespace RabbitAssets {
 
 ICON(DEFAULT, "default");
 ICON(ANGEL, "angel");
+ICON(BLACKOUT, "blackout");
 ICON(COLOR, "color");
 ICON(IMPOSTOR, "impostor");
 ICON(MATRIX, "matrix");
