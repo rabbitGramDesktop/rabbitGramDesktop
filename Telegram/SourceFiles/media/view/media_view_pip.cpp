@@ -32,6 +32,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/text/format_values.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/painter.h"
+#include "ui/ui_utility.h"
 #include "window/window_controller.h"
 #include "styles/style_widgets.h"
 #include "styles/style_window.h"
@@ -480,17 +481,7 @@ PipPanel::Position PipPanel::countPosition() const {
 }
 
 void PipPanel::setPositionDefault() {
-	const auto widgetScreen = [&](auto &&widget) -> QScreen* {
-		if (!widget) {
-			return nullptr;
-		}
-		if (const auto screen = QGuiApplication::screenAt(
-				widget->geometry().center())) {
-			return screen;
-		}
-		return widget->screen();
-	};
-	const auto parentScreen = widgetScreen(_parent);
+	const auto parentScreen = _parent ? _parent->screen() : nullptr;
 	const auto myScreen = widget()->screen();
 	if (parentScreen && myScreen != parentScreen) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)

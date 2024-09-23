@@ -11,6 +11,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "info/info_controller.h"
 #include "info/info_memento.h"
 #include "lang/lang_keys.h"
+#include "ui/ui_utility.h"
 
 namespace Info::BotEarn {
 

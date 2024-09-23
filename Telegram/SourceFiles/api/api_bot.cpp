@@ -15,6 +15,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "boxes/url_auth_box.h"
 #include "boxes/peers/choose_peer_box.h"
 #include "lang/lang_keys.h"
+#include "chat_helpers/bot_command.h"
 #include "core/core_cloud_password.h"
 #include "core/click_handler_types.h"
 #include "data/data_changes.h"
@@ -37,6 +38,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/toast/toast.h"
 #include "ui/layers/generic_box.h"
 #include "ui/text/text_utilities.h"
+
+#include <QtGui/QGuiApplication>
+#include <QtGui/QClipboard>
 
 namespace Api {
 namespace {
@@ -502,9 +506,17 @@ void ActivateBotCommand(ClickHandlerContext context, int row, int column) {
 			bot->session().attachWebView().open({
 				.bot = bot,
 				.context = { .controller = controller },
-				.button = {.text = button->text, .url = button->data },
+				.button = { .text = button->text, .url = button->data },
 				.source = InlineBots::WebViewSourceButton{ .simple = true },
 			});
+		}
+	} break;
+
+	case ButtonType::CopyText: {
+		const auto text = QString::fromUtf8(button->data);
+		if (!text.isEmpty()) {
+			QGuiApplication::clipboard()->setText(text);
+			controller->showToast(tr::lng_text_copied(tr::now));
 		}
 	} break;
 	}

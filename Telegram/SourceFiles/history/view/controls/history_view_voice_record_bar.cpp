@@ -36,6 +36,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/painter.h"
 #include "ui/widgets/tooltip.h"
 #include "ui/rect.h"
+#include "ui/ui_utility.h"
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
 #include "styles/style_layers.h"

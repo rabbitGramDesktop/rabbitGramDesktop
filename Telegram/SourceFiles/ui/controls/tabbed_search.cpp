@@ -14,6 +14,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/painter.h"
 #include "ui/rect.h"
+#include "ui/ui_utility.h"
 #include "styles/style_chat_helpers.h"
 
 #include <QtWidgets/QApplication>

@@ -611,7 +611,8 @@ void SetupInterfaceScale(
 		st::settingsScale,
 		st::settingsScaleLabel,
 		st::normalFont->spacew * 2,
-		st::settingsScaleLabel.style.font->width("300%"));
+		st::settingsScaleLabel.style.font->width("300%"),
+		true);
 	container->add(
 		std::move(sliderWithLabel.widget),
 		icon ? st::settingsScalePadding : st::settingsBigScalePadding);

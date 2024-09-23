@@ -10,6 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "api/api_authorizations.h"
 #include "api/api_user_names.h"
 #include "api/api_chat_participants.h"
+#include "api/api_global_privacy.h"
 #include "api/api_ringtones.h"
 #include "api/api_text_entities.h"
 #include "api/api_user_privacy.h"
@@ -416,13 +417,12 @@ void Updates::channelDifferenceDone(
 			"{ good - after not final channelDifference was received }%1"
 			).arg(_session->mtp().isTestMode() ? " TESTMODE" : ""));
 		getChannelDifference(channel);
-	} else if (ranges::contains(
-			_activeChats,
-			channel,
-			[](const auto &pair) { return pair.second.peer; })) {
-		channel->ptsWaitingForShortPoll(timeout
+	} else if (inActiveChats(channel)) {
+		channel->ptsSetWaitingForShortPoll(timeout
 			? (timeout * crl::time(1000))
 			: kWaitForChannelGetDifference);
+	} else {
+		channel->ptsSetWaitingForShortPoll(-1);
 	}
 }
 
@@ -654,6 +654,7 @@ void Updates::getDifferenceAfterFail() {
 			wait = wait ? std::min(wait, i->second - now) : (i->second - now);
 			++i;
 		} else {
+			i->first->ptsSetRequesting(false);
 			getChannelDifference(i->first, ChannelDifferenceRequest::AfterFail);
 			i = _whenGetDiffAfterFail.erase(i);
 		}
@@ -702,7 +703,9 @@ void Updates::getChannelDifference(
 		_whenGetDiffByPts.remove(channel);
 	}
 
-	if (!channel->ptsInited() || channel->ptsRequesting()) return;
+	if (!channel->ptsInited() || channel->ptsRequesting()) {
+		return;
+	}
 
 	if (from != ChannelDifferenceRequest::AfterFail) {
 		_whenGetDiffAfterFail.remove(channel);
@@ -739,14 +742,30 @@ void Updates::addActiveChat(rpl::producer<PeerData*> chat) {
 	std::move(
 		chat
 	) | rpl::start_with_next_done([=](PeerData *peer) {
-		_activeChats[key].peer = peer;
-		if (const auto channel = peer ? peer->asChannel() : nullptr) {
-			channel->ptsWaitingForShortPoll(
-				kWaitForChannelGetDifference);
+		auto &active = _activeChats[key];
+		const auto was = active.peer;
+		if (was != peer) {
+			active.peer = peer;
+			if (const auto channel = was ? was->asChannel() : nullptr) {
+				if (!inActiveChats(channel)) {
+					channel->ptsSetWaitingForShortPoll(-1);
+				}
+			}
+			if (const auto channel = peer ? peer->asChannel() : nullptr) {
+				channel->ptsSetWaitingForShortPoll(
+					kWaitForChannelGetDifference);
+			}
 		}
 	}, [=] {
 		_activeChats.erase(key);
 	}, _activeChats[key].lifetime);
+}
+
+bool Updates::inActiveChats(not_null<PeerData*> peer) const {
+	return ranges::contains(
+		_activeChats,
+		peer.get(),
+		[](const auto &pair) { return pair.second.peer; });
 }
 
 void Updates::requestChannelRangeDifference(not_null<History*> history) {
@@ -1553,6 +1572,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 		}
 		if (channel && !_handlingChannelDifference) {
 			if (channel->ptsRequesting()) { // skip global updates while getting channel difference
+				MTP_LOG(0, ("Skipping new channel message because getting the difference."));
 				return;
 			}
 			channel->ptsUpdateAndApply(d.vpts().v, d.vpts_count().v, update);
@@ -1645,6 +1665,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 
 		if (channel && !_handlingChannelDifference) {
 			if (channel->ptsRequesting()) { // skip global updates while getting channel difference
+				MTP_LOG(0, ("Skipping channel message edit because getting the difference."));
 				return;
 			} else {
 				channel->ptsUpdateAndApply(d.vpts().v, d.vpts_count().v, update);
@@ -1660,6 +1681,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 
 		if (channel && !_handlingChannelDifference) {
 			if (channel->ptsRequesting()) { // skip global updates while getting channel difference
+				MTP_LOG(0, ("Skipping pinned channel messages because getting the difference."));
 				return;
 			} else {
 				channel->ptsUpdateAndApply(d.vpts().v, d.vpts_count().v, update);
@@ -1774,6 +1796,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 
 		if (channel && !_handlingChannelDifference) {
 			if (channel->ptsRequesting()) { // skip global updates while getting channel difference
+				MTP_LOG(0, ("Skipping delete channel messages because getting the difference."));
 				return;
 			}
 			channel->ptsUpdateAndApply(d.vpts().v, d.vpts_count().v, update);
@@ -1837,6 +1860,7 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 		auto channel = session().data().channelLoaded(d.vchannel_id());
 		if (channel && !_handlingChannelDifference) {
 			if (channel->ptsRequesting()) { // skip global updates while getting channel difference
+				MTP_LOG(0, ("Skipping channel web page update because getting the difference."));
 				return;
 			} else {
 				channel->ptsUpdateAndApply(d.vpts().v, d.vpts_count().v, update);
@@ -2620,6 +2644,12 @@ void Updates::feedUpdate(const MTPUpdate &update) {
 	case mtpc_updateStarsBalance: {
 		const auto &data = update.c_updateStarsBalance();
 		_session->credits().apply(data);
+	} break;
+
+	case mtpc_updatePaidReactionPrivacy: {
+		const auto &data = update.c_updatePaidReactionPrivacy();
+		_session->api().globalPrivacy().updatePaidReactionAnonymous(
+			mtpIsTrue(data.vprivate()));
 	} break;
 
 	}

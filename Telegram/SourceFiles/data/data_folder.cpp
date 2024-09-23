@@ -72,7 +72,7 @@ constexpr auto kShowChatNamesCount = 8;
 	);
 	const auto wrapName = [](not_null<History*> history) {
 		const auto name = history->peer->name();
-		return TextWithEntities{
+		return st::wrap_rtl(TextWithEntities{
 			.text = name,
 			.entities = (history->chatListBadgesState().unread
 				? EntitiesInText{
@@ -80,7 +80,7 @@ constexpr auto kShowChatNamesCount = 8;
 					{ EntityType::Colorized, 0, int(name.size()), QString() },
 				}
 				: EntitiesInText{}),
-		};
+		});
 	};
 	const auto shown = int(peers.size());
 	const auto accumulated = [&] {

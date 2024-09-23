@@ -12,6 +12,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "core/core_cloud_password.h"
 #include "passport/passport_encryption.h"
 
+#include "base/unixtime.h"
+#include "base/call_delayed.h"
+
 namespace Api {
 namespace {
 

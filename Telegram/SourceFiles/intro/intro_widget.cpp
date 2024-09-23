@@ -31,6 +31,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 #include "ui/wrap/fade_wrap.h"
+#include "ui/ui_utility.h"
 #include "boxes/abstract_box.h"
 #include "core/update_checker.h"
 #include "core/application.h"

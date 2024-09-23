@@ -23,6 +23,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/boxes/single_choice_box.h"
 #include "ui/painter.h"
 #include "ui/vertical_list.h"
+#include "ui/ui_utility.h"
 #include "boxes/connection_box.h"
 #include "boxes/about_box.h"
 #include "ui/boxes/confirm_box.h"

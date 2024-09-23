@@ -26,6 +26,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/painter.h"
 #include "ui/vertical_list.h"
 #include "ui/unread_badge_paint.h"
+#include "ui/ui_utility.h"
 #include "core/application.h"
 #include "core/click_handler_types.h"
 #include "core/core_settings.h"
