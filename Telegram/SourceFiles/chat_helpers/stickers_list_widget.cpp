@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "chat_helpers/stickers_list_widget.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "base/timer_rpl.h"
 #include "core/application.h"
@@ -288,6 +290,12 @@ StickersListWidget::StickersListWidget(
 			refreshStickers();
 		}, lifetime());
 	}
+
+	RabbitSettings::JsonSettings::Events(
+		"recent_stickers_limit"
+	) | rpl::start_with_next([=] {
+		refreshStickers();
+	}, lifetime());
 }
 
 rpl::producer<FileChosen> StickersListWidget::chosen() const {
@@ -2282,7 +2290,7 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 	_custom.reserve(cloudCount + recent.size() + customCount);
 
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
-		if (result.size() >= kRecentDisplayLimit) {
+		if (result.size() >= RabbitSettings::JsonSettings::GetInt("recent_stickers_limit")) {
 			return;
 		}
 		const auto i = ranges::find(result, document, &Sticker::document);

@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "boxes/sticker_set_box.h"
 #include "history/history.h"
@@ -143,6 +145,8 @@ bool Sticker::webpagePart() const {
 }
 
 void Sticker::initSize(int customSize) {
+	if (!customSize) customSize = RabbitSettings::JsonSettings::GetInt("sticker_size");
+
 	if (customSize > 0) {
 		const auto original = Size(_data);
 		const auto proposed = QSize{ customSize, customSize };
@@ -188,8 +192,9 @@ bool Sticker::readyToDrawAnimationFrame() {
 }
 
 QSize Sticker::Size() {
-	const auto side = std::min(st::maxStickerSize, kMaxSizeFixed);
-	return { side, side };
+	const auto currentStickerHeight = RabbitSettings::JsonSettings::GetInt("sticker_size");
+	const auto maxHeight = int(st::maxStickerSize / 256.0 * currentStickerHeight);
+	return { maxHeight, maxHeight };
 }
 
 QSize Sticker::Size(not_null<DocumentData*> document) {
@@ -214,7 +219,9 @@ QSize Sticker::MessageEffectSize() {
 }
 
 QSize Sticker::EmojiSize() {
-	const auto side = std::min(st::maxAnimatedEmojiSize, kMaxEmojiSizeFixed);
+	const auto currentStickerHeight = RabbitSettings::JsonSettings::GetInt("sticker_size");
+	const auto maxHeight = int(st::maxStickerSize / 256.0 * currentStickerHeight / 2);
+	const auto side = std::min(maxHeight, kMaxEmojiSizeFixed);
 	return { side, side };
 }
 
@@ -222,9 +229,24 @@ void Sticker::draw(
 		Painter &p,
 		const PaintContext &context,
 		const QRect &r) {
+	PainterHighQualityEnabler hq(p);
+	
 	if (!customEmojiPart()) {
 		_parent->clearCustomEmojiRepaint();
 	}
+	
+	auto radius = []() -> qreal {
+		switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+			case 1: return st::bubbleRadiusSmall;
+			case 2: return st::bubbleRadiusLarge;
+			default: return 0;
+		}
+	};
+	
+	p.save();
+	QPainterPath clipPath;
+	clipPath.addRoundedRect(r, radius(), radius());
+	p.setClipPath(clipPath);
 
 	ensureDataMediaCreated();
 	if (readyToDrawAnimationFrame()) {
@@ -234,6 +256,8 @@ void Sticker::draw(
 		|| !paintPixmap(p, context, r)) {
 		paintPath(p, context, r);
 	}
+
+	p.restore();
 }
 
 ClickHandlerPtr Sticker::link() {
@@ -258,6 +282,8 @@ void Sticker::paintAnimationFrame(
 		Painter &p,
 		const PaintContext &context,
 		const QRect &r) {
+	PainterHighQualityEnabler hq(p);
+	
 	const auto colored = (customEmojiPart() && _data->emojiUsesTextColor())
 		? ComputeEmojiTextColor(context)
 		: (context.selected() && !_nextLastDiceFrame)
@@ -288,6 +314,20 @@ void Sticker::paintAnimationFrame(
 			context.st->msgStickerOverlay()->c)
 		: image;
 	const auto size = prepared.size() / style::DevicePixelRatio();
+
+	auto radius = []() -> qreal {
+		switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+		case 1: return st::bubbleRadiusSmall;
+		case 2: return st::bubbleRadiusLarge;
+		default: return 0;
+		}
+	};
+	
+	p.save();
+	QPainterPath clipPath;
+	clipPath.addRoundedRect(r, radius(), radius());
+	p.setClipPath(clipPath);
+	
 	p.drawImage(
 		QRect(
 			QPoint(
@@ -298,6 +338,8 @@ void Sticker::paintAnimationFrame(
 	if (!_lastDiceFrame.isNull()) {
 		return;
 	}
+
+	p.restore();
 
 	const auto count = _player->framesCount();
 	_frameIndex = frame.index;
@@ -329,6 +371,8 @@ bool Sticker::paintPixmap(
 		Painter &p,
 		const PaintContext &context,
 		const QRect &r) {
+	PainterHighQualityEnabler hq(p);
+	
 	const auto pixmap = paintedPixmap(context);
 	if (pixmap.isNull()) {
 		return false;
@@ -347,7 +391,23 @@ bool Sticker::paintPixmap(
 		p.scale(-1., 1.);
 		p.translate(-middle);
 	}
+
+	auto radius = []() -> qreal {
+		switch (RabbitSettings::JsonSettings::GetInt("sticker_shape")) {
+		case 1: return st::bubbleRadiusSmall;
+		case 2: return st::bubbleRadiusLarge;
+		default: return 0;
+		}
+	};
+	
+	p.save();
+	QPainterPath clipPath;
+	clipPath.addRoundedRect(r, radius(), radius());
+	p.setClipPath(clipPath);
+	
 	p.drawPixmap(position, pixmap);
+	p.restore();
+	
 	if (mirror) {
 		p.restore();
 	}

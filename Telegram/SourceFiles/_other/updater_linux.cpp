@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include <cstdio>
 #include <sys/stat.h>
@@ -268,7 +268,7 @@ bool update() {
 						writeLog("Error: bad update, has Updater! '%s' equal '%s'", tofname.c_str(), updaterName.c_str());
 						delFolder();
 						return false;
-					} else if (equal(tofname, exePath + "Telegram") && exeName != "Telegram") {
+					} else if (equal(tofname, exePath + "rabbitGram") && exeName != "rabbitGram") {
 						string fullBinaryPath = exePath + exeName;
 						writeLog("Target binary found: '%s', changing to '%s'", tofname.c_str(), fullBinaryPath.c_str());
 						tofname = fullBinaryPath;
@@ -398,7 +398,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if (exeName.empty() || exeName.find('/') != string::npos) {
-		exeName = "Telegram";
+		exeName = "rabbitGram";
 	}
 	openLog();
 
@@ -432,7 +432,7 @@ int main(int argc, char *argv[]) {
 					writeLog("No workdir, trying to figure it out");
 					struct passwd *pw = getpwuid(getuid());
 					if (pw && pw->pw_dir && strlen(pw->pw_dir)) {
-						string tryDir = pw->pw_dir + string("/.TelegramDesktop/");
+						string tryDir = pw->pw_dir + string("/.RabbitGramDesktop/");
 						struct stat statbuf;
 						writeLog("Trying to use '%s' as workDir, getting stat() for tupdates/ready", tryDir.c_str());
 						if (!stat((tryDir + "tupdates/ready").c_str(), &statbuf)) {
@@ -510,7 +510,7 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 
-		writeLog("Executed Telegram, closing log and quitting..");
+		writeLog("Executed rabbitGram, closing log and quitting..");
 	}
 
 	closeLog();

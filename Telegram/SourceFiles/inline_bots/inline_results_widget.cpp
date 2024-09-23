@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "inline_bots/inline_results_widget.h"
 
@@ -38,7 +38,7 @@ Widget::Widget(
 , _contentHeight(_contentMaxHeight)
 , _scroll(this, st::inlineBotsScroll)
 , _innerRounding(Ui::PrepareCornerPixmaps(
-	ImageRoundRadius::Small,
+	ImageRoundRadius::Large,
 	st::emojiPanBg))
 , _inlineRequestTimer([=] { onInlineRequest(); }) {
 	resize(QRect(0, 0, st::emojiPanWidth, _contentHeight).marginsAdded(innerPadding()).size());
@@ -66,7 +66,7 @@ Widget::Widget(
 	style::PaletteChanged(
 	) | rpl::start_with_next([=] {
 		_innerRounding = Ui::PrepareCornerPixmaps(
-			ImageRoundRadius::Small,
+			ImageRoundRadius::Large,
 			st::emojiPanBg);
 	}, lifetime());
 
@@ -242,7 +242,7 @@ void Widget::startShowAnimation() {
 			QRect(
 				inner.topLeft() * style::DevicePixelRatio(),
 				inner.size() * style::DevicePixelRatio()));
-		_showAnimation->setCornerMasks(Images::CornersMask(ImageRoundRadius::Small));
+		_showAnimation->setCornerMasks(Images::CornersMask(ImageRoundRadius::Large));
 		_showAnimation->start();
 	}
 	hideChildren();

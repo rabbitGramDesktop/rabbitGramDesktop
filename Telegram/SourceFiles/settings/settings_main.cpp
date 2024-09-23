@@ -1,11 +1,14 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_main.h"
+
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings_menu/rabbit_settings_menu.h"
 
 #include "api/api_credits.h"
 #include "core/application.h"
@@ -389,12 +392,22 @@ void SetupSections(
 			showOther(type);
 		});
 	};
+
+	addSection(
+		rktr("rtg_settings"),
+		Rabbit::Id(),
+		{ &st::menuIconRabbit });
+
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
 
 		Ui::AddDivider(container);
 		Ui::AddSkip(container);
 	} else {
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
+
 		addSection(
 			tr::lng_settings_my_account(),
 			Information::Id(),

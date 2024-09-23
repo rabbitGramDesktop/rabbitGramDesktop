@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_call.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "lang/lang_keys.h"
 #include "ui/chat/chat_style.h"
@@ -48,7 +50,9 @@ Call::Call(
 	_text = Data::MediaCall::Text(item, _reason, _video);
 	_status = QLocale().toString(
 		parent->dateTime().time(),
-		QLocale::ShortFormat);
+		RabbitSettings::JsonSettings::GetBool("show_seconds")
+			? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+			: QLocale::system().timeFormat(QLocale::ShortFormat));
 	if (_duration) {
 		_status = tr::lng_call_duration_info(
 			tr::now,

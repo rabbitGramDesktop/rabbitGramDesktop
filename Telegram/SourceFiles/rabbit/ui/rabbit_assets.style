@@ -1,0 +1,41 @@
+/*
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
+
+For license and copyright information please follow this link:
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
+*/
+
+using "ui/basic.style";
+using "ui/colors.palette";
+using "ui/widgets/widgets.style";
+using "info/info.style";
+
+cpPadding: 14px;
+cpSelectedPadding: 2px;
+cpSelectedRounding: 12px;
+cpImagePadding: 4px;
+cpSpacingX: 16px;
+cpSpacingY: 8px;
+cpIconSize: 64px;
+
+rndPreviewFill: historyPeerArchiveUserpicBg;
+rndSkeletonFill: windowBgOver;
+
+rndPreviewSize: 48px;
+rndPenSize: 2px;
+
+stickerPreviewTimeWidth: 36px;
+stickerPreviewTimeHeight: 18px;
+stickerSpacefillerHeight: 30px;
+
+stickerPreviewSize: 220px;
+stickerPreviewMargin: 8px;
+
+stickerShapeBoxWidth: 348px;
+stickerShapeBoxHeight: 74px;
+stickerShapeMargins: 20px;
+stickerShapeVariantCardWidth: 102px;
+stickerShapeVariantCardHeight: 70px;
+stickerShapePadding: 10px;
+stickerShapePenWidth: 2px;

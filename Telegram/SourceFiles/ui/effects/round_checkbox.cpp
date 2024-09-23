@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/effects/round_checkbox.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "ui/rp_widget.h"
 #include "ui/ui_utility.h"
@@ -415,7 +417,8 @@ void RoundImageCheckbox::paint(Painter &p, int x, int y, int outerWidth) const {
 				segments ? _segments.front().width : _st.selectWidth);
 			p.setPen(pen);
 			if (!radius) {
-				p.drawEllipse(outline);
+				auto customRadius = outline.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+				p.drawRoundedRect(outline, customRadius, customRadius);
 			} else {
 				p.drawRoundedRect(outline, *radius, *radius);
 			}

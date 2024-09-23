@@ -1,11 +1,14 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "info/profile/info_profile_values.h"
+
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "api/api_chat_participants.h"
 #include "apiwrap.h"
@@ -127,7 +130,9 @@ rpl::producer<TextWithEntities> PhoneValue(not_null<UserData*> user) {
 			user,
 			UpdateFlag::PhoneNumber) | rpl::to_empty
 	) | rpl::map([=] {
-		return Ui::FormatPhone(user->phone());
+		return (RabbitSettings::JsonSettings::GetBool("streamer_mode") && user->isSelf())
+				? ktr("rtg_phone_hidden")
+				: Ui::FormatPhone(user->phone());
 	}) | Ui::Text::ToWithEntities();
 }
 

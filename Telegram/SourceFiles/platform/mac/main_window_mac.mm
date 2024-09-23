@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "platform/mac/main_window_mac.h"
 
@@ -364,7 +364,7 @@ void MainWindow::createGlobalMenu() {
 		}
 	};
 
-	auto main = psMainMenu.addMenu(u"Telegram"_q);
+	auto main = psMainMenu.addMenu(u"rabbitGram"_q);
 	{
 		auto callback = [=] {
 			ensureWindowShown();
@@ -374,7 +374,7 @@ void MainWindow::createGlobalMenu() {
 			tr::lng_mac_menu_about_telegram(
 				tr::now,
 				lt_telegram,
-				u"Telegram"_q),
+				u"rabbitGram"_q),
 			std::move(callback))
 		->setMenuRole(QAction::AboutQtRole);
 	}

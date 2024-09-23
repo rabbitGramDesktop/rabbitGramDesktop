@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "window/window_main_menu.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "apiwrap.h"
 #include "base/qt_signal_producer.h"
@@ -456,8 +458,8 @@ MainMenu::MainMenu(
 	parentResized();
 
 	_telegram->setMarkedText(Ui::Text::Link(
-		u"Telegram Desktop"_q,
-		u"https://desktop.telegram.org"_q));
+		u"rabbitGram Desktop"_q,
+		u"tg://resolve?domain=rabbitGramUpdates"_q));
 	_telegram->setLinksTrusted();
 	_version->setMarkedText(
 		Ui::Text::Link(
@@ -722,73 +724,89 @@ void MainMenu::setupMenu() {
 			std::move(descriptor));
 	};
 	if (!_controller->session().supportMode()) {
-		AddMyChannelsBox(addAction(
-			tr::lng_create_group_title(),
-			{ &st::menuIconGroups }
-		), controller, true)->addClickHandler([=](Qt::MouseButton which) {
-			if (which == Qt::LeftButton) {
-				controller->showNewGroup();
-			}
-		});
-
-		AddMyChannelsBox(addAction(
-			tr::lng_create_channel_title(),
-			{ &st::menuIconChannel }
-		), controller, false)->addClickHandler([=](Qt::MouseButton which) {
-			if (which == Qt::LeftButton) {
-				controller->showNewChannel();
-			}
-		});
-
-		const auto wrap = _menu->add(
-			object_ptr<Ui::SlideWrap<Ui::SettingsButton>>(
-				_menu,
-				CreateButtonWithIcon(
-					_menu,
-					tr::lng_menu_my_stories(),
-					st::mainMenuButton,
-					IconDescriptor{ &st::menuIconStoriesSavedSection })));
-		const auto selfId = controller->session().userPeerId();
-		const auto stories = &controller->session().data().stories();
-		if (stories->archiveCount(selfId) > 0) {
-			wrap->toggle(true, anim::type::instant);
-		} else {
-			wrap->toggle(false, anim::type::instant);
-			if (!stories->archiveCountKnown(selfId)) {
-				stories->archiveLoadMore(selfId);
-				wrap->toggleOn(stories->archiveChanged(
-				) | rpl::filter(
-					rpl::mappers::_1 == selfId
-				) | rpl::map([=] {
-					return stories->archiveCount(selfId) > 0;
-				}) | rpl::filter(rpl::mappers::_1) | rpl::take(1));
-			}
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_create_group")) {
+			AddMyChannelsBox(addAction(
+				tr::lng_create_group_title(),
+				{ &st::menuIconGroups }
+			), controller, true)->addClickHandler([=](Qt::MouseButton which) {
+				if (which == Qt::LeftButton) {
+					controller->showNewGroup();
+				}
+			});
 		}
-		wrap->entity()->setClickedCallback([=] {
-			controller->showSection(
-				Info::Stories::Make(controller->session().user()));
-		});
 
-		SetupMenuBots(_menu, controller);
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_create_channel")) {
+			AddMyChannelsBox(addAction(
+				tr::lng_create_channel_title(),
+				{ &st::menuIconChannel }
+			), controller, false)->addClickHandler([=](Qt::MouseButton which) {
+				if (which == Qt::LeftButton) {
+					controller->showNewChannel();
+				}
+			});
+		}
 
-		addAction(
-			tr::lng_menu_contacts(),
-			{ &st::menuIconProfile }
-		)->setClickedCallback([=] {
-			controller->show(PrepareContactsBox(controller));
-		});
-		addAction(
-			tr::lng_menu_calls(),
-			{ &st::menuIconPhone }
-		)->setClickedCallback([=] {
-			ShowCallsBox(controller);
-		});
-		addAction(
-			tr::lng_saved_messages(),
-			{ &st::menuIconSavedMessages }
-		)->setClickedCallback([=] {
-			controller->showPeerHistory(controller->session().user());
-		});
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_stories")) {
+			const auto wrap = _menu->add(
+				object_ptr<Ui::SlideWrap<Ui::SettingsButton>>(
+					_menu,
+					CreateButtonWithIcon(
+						_menu,
+						tr::lng_menu_my_stories(),
+						st::mainMenuButton,
+						IconDescriptor{ &st::menuIconStoriesSavedSection })));
+			const auto selfId = controller->session().userPeerId();
+			const auto stories = &controller->session().data().stories();
+			if (stories->archiveCount(selfId) > 0) {
+				wrap->toggle(true, anim::type::instant);
+			} else {
+				wrap->toggle(false, anim::type::instant);
+				if (!stories->archiveCountKnown(selfId)) {
+					stories->archiveLoadMore(selfId);
+					wrap->toggleOn(stories->archiveChanged(
+					) | rpl::filter(
+						rpl::mappers::_1 == selfId
+					) | rpl::map([=] {
+						return stories->archiveCount(selfId) > 0;
+					}) | rpl::filter(rpl::mappers::_1) | rpl::take(1));
+				}
+			}
+			wrap->entity()->setClickedCallback([=] {
+				controller->showSection(
+					Info::Stories::Make(controller->session().user()));
+			});
+		}
+
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_bots")) {
+			SetupMenuBots(_menu, controller);
+		}
+
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_contacts")) {
+			addAction(
+				tr::lng_menu_contacts(),
+				{ &st::menuIconProfile }
+			)->setClickedCallback([=] {
+				controller->show(PrepareContactsBox(controller));
+			});
+		}
+
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_calls")) {
+			addAction(
+				tr::lng_menu_calls(),
+				{ &st::menuIconPhone }
+			)->setClickedCallback([=] {
+				ShowCallsBox(controller);
+			});
+		}
+
+		if (RabbitSettings::JsonSettings::GetBool("sidebar_saved_messages")) {
+			addAction(
+				tr::lng_saved_messages(),
+				{ &st::menuIconSavedMessages }
+			)->setClickedCallback([=] {
+				controller->showPeerHistory(controller->session().user());
+			});
+		}
 	} else {
 		addAction(
 			tr::lng_profile_add_contact(),
@@ -820,44 +838,46 @@ void MainMenu::setupMenu() {
 		controller->showSettings();
 	});
 
-	_nightThemeToggle = addAction(
-		tr::lng_menu_night_mode(),
-		{ &st::menuIconNightMode }
-	)->toggleOn(_nightThemeSwitches.events_starting_with(
-		Window::Theme::IsNightMode()
-	));
-	_nightThemeToggle->toggledChanges(
-	) | rpl::filter([=](bool night) {
-		return (night != Window::Theme::IsNightMode());
-	}) | rpl::start_with_next([=](bool night) {
-		if (Window::Theme::Background()->editingTheme()) {
-			_nightThemeSwitches.fire(!night);
-			controller->show(Ui::MakeInformBox(
-				tr::lng_theme_editor_cant_change_theme()));
-			return;
-		}
-		const auto weak = MakeWeak(this);
-		const auto toggle = [=] {
-			if (!weak) {
-				Window::Theme::ToggleNightMode();
-				Window::Theme::KeepApplied();
-			} else {
-				_nightThemeSwitch.callOnce(st::mainMenu.itemToggle.duration);
+	if (RabbitSettings::JsonSettings::GetBool("sidebar_night_mode")) {
+		_nightThemeToggle = addAction(
+			tr::lng_menu_night_mode(),
+			{ &st::menuIconNightMode }
+		)->toggleOn(_nightThemeSwitches.events_starting_with(
+			Window::Theme::IsNightMode()
+		));
+		_nightThemeToggle->toggledChanges(
+		) | rpl::filter([=](bool night) {
+			return (night != Window::Theme::IsNightMode());
+		}) | rpl::start_with_next([=](bool night) {
+			if (Window::Theme::Background()->editingTheme()) {
+				_nightThemeSwitches.fire(!night);
+				controller->show(Ui::MakeInformBox(
+					tr::lng_theme_editor_cant_change_theme()));
+				return;
 			}
-		};
-		Window::Theme::ToggleNightModeWithConfirmation(
-			&_controller->window(),
-			toggle);
-	}, _nightThemeToggle->lifetime());
+			const auto weak = MakeWeak(this);
+			const auto toggle = [=] {
+				if (!weak) {
+					Window::Theme::ToggleNightMode();
+					Window::Theme::KeepApplied();
+				} else {
+					_nightThemeSwitch.callOnce(st::mainMenu.itemToggle.duration);
+				}
+			};
+			Window::Theme::ToggleNightModeWithConfirmation(
+				&_controller->window(),
+				toggle);
+		}, _nightThemeToggle->lifetime());
 
-	Core::App().settings().systemDarkModeValue(
-	) | rpl::start_with_next([=](std::optional<bool> darkMode) {
-		const auto darkModeEnabled
-			= Core::App().settings().systemDarkModeEnabled();
-		if (darkModeEnabled && darkMode.has_value()) {
-			_nightThemeSwitches.fire_copy(*darkMode);
-		}
-	}, _nightThemeToggle->lifetime());
+		Core::App().settings().systemDarkModeValue(
+		) | rpl::start_with_next([=](std::optional<bool> darkMode) {
+			const auto darkModeEnabled
+				= Core::App().settings().systemDarkModeEnabled();
+			if (darkModeEnabled && darkMode.has_value()) {
+				_nightThemeSwitches.fire_copy(*darkMode);
+			}
+		}, _nightThemeToggle->lifetime());
+	}
 }
 
 void MainMenu::resizeEvent(QResizeEvent *e) {

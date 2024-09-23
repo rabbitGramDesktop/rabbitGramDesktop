@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
@@ -35,8 +35,8 @@ class TitleWidget;
 struct TermsLock;
 struct SeparateId;
 
-[[nodiscard]] const QImage &Logo();
-[[nodiscard]] const QImage &LogoNoMargin();
+[[nodiscard]] QImage Logo();
+[[nodiscard]] QImage LogoNoMargin();
 void OverrideApplicationIcon(QImage image);
 [[nodiscard]] QIcon CreateIcon(
 	Main::Session *session = nullptr,

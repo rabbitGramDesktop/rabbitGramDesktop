@@ -1,11 +1,14 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_item.h"
+
+#include "rabbit/settings/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "api/api_sensitive_content.h"
 #include "lang/lang_keys.h"
@@ -71,6 +74,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "platform/platform_notifications_manager.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
 #include "styles/style_dialogs.h"
+#include "ui/text/format_values.h"
 
 namespace {
 
@@ -1137,11 +1141,24 @@ void HistoryItem::setCommentsItemId(FullMsgId id) {
 	}
 }
 
+QString GenerateServiceTime(TimeId date) {
+	if (date > 0)
+	{
+		auto lastTime = base::unixtime::parse(date);
+		auto format = RabbitSettings::JsonSettings::GetBool("show_seconds")
+			? QLocale().toString(lastTime.time(), QLocale::LongFormat).remove(" t")
+			: QLocale().toString(lastTime.time(), QLocale::ShortFormat);
+		return QString(" (%1)").arg(format);
+	}
+	return QString();
+}
+
 void HistoryItem::setServiceText(PreparedServiceText &&prepared) {
 	AddComponents(HistoryServiceData::Bit());
 	_flags &= ~MessageFlag::HasTextLinks;
 	const auto data = Get<HistoryServiceData>();
 	const auto had = !_text.empty();
+	if (RabbitSettings::JsonSettings::GetBool("show_actions_time")) prepared.text.text += GenerateServiceTime(date());
 	_text = std::move(prepared.text);
 	data->textLinks = std::move(prepared.links);
 	if (had) {
@@ -5785,7 +5802,9 @@ PreparedServiceText HistoryItem::prepareCallScheduledText(
 	};
 	const auto time = QLocale().toString(
 		scheduled.time(),
-		QLocale::ShortFormat);
+		RabbitSettings::JsonSettings::GetBool("show_seconds")
+		? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+		: QLocale::system().timeFormat(QLocale::ShortFormat));
 	const auto prepareGeneric = [&] {
 		prepareWithDate(tr::lng_group_call_starts_date(
 			tr::now,

@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "window/window_peer_menu.h"
+
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "menu/menu_check_item.h"
 #include "boxes/share_box.h"
@@ -248,6 +250,26 @@ void ForwardToSelf(
 	}
 }
 
+Fn<void()> GoToFirstMessageHandler(
+	not_null<Window::SessionController*> controller,
+	not_null<PeerData*> peer)
+{
+	const auto weak = base::make_weak(controller.get());
+	const auto jump = [=](const QDate &date)
+	{
+		const auto chat = peer->owner().history(peer->id);
+		const auto open = [=](not_null<PeerData*> peer, MsgId id)
+		{
+			if (const auto strong = weak.get())
+			{
+				strong->showPeerHistory(peer, SectionShow::Way::Forward, id);
+			}
+		};
+		peer->session().api().resolveJumpToDate(chat, date, open);
+	};
+	return [=] { jump(QDate(2013, 8, 1)); };
+}	
+
 class Filler {
 public:
 	Filler(
@@ -288,6 +310,7 @@ private:
 	void addCreatePoll();
 	void addThemeEdit();
 	void addBlockUser();
+	void addGoToFirstMessage();
 	void addViewDiscussion();
 	void addToggleTopicClosed();
 	void addExportChat();
@@ -848,6 +871,14 @@ void Filler::addBlockUser() {
 		user->session().api().requestFullPeer(user);
 	}
 }
+
+void Filler::addGoToFirstMessage()
+{
+	_addAction(
+		ktr("rtg_goto_first_message"),
+		GoToFirstMessageHandler(_controller, _peer),
+		&st::menuIconGoToBeginning);
+}	
 
 void Filler::addViewDiscussion() {
 	const auto channel = _peer->asBroadcast();
@@ -1422,6 +1453,7 @@ void Filler::fillHistoryActions() {
 	addCreatePoll();
 	addThemeEdit();
 	addViewDiscussion();
+	addGoToFirstMessage();
 	addExportChat();
 	addTranslate();
 	addReport();
@@ -1446,6 +1478,7 @@ void Filler::fillProfileActions() {
 	addManageTopic();
 	addToggleTopicClosed();
 	addViewDiscussion();
+	addGoToFirstMessage();
 	addExportChat();
 	addBlockUser();
 	addReport();

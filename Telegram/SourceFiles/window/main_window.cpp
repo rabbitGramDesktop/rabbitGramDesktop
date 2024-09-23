@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "window/main_window.h"
+
+#include "rabbit/ui/rabbit_assets.h"
 
 #include "api/api_updates.h"
 #include "storage/localstorage.h"
@@ -92,14 +94,12 @@ base::options::toggle OptionDisableTouchbar({
 const char kOptionNewWindowsSizeAsFirst[] = "new-windows-size-as-first";
 const char kOptionDisableTouchbar[] = "touchbar-disabled";
 
-const QImage &Logo() {
-	static const auto result = QImage(u":/gui/art/logo_256.png"_q);
-	return result;
+QImage Logo() {
+	return RabbitAssets::currentAppLogo();
 }
 
-const QImage &LogoNoMargin() {
-	static const auto result = QImage(u":/gui/art/logo_256_no_margin.png"_q);
-	return result;
+QImage LogoNoMargin() {
+	return RabbitAssets::currentAppLogoNoMargin();
 }
 
 void ConvertIconToBlack(QImage &image) {
@@ -154,16 +154,7 @@ void OverrideApplicationIcon(QImage image) {
 }
 
 QIcon CreateOfficialIcon(Main::Session *session) {
-	const auto support = (session && session->supportMode());
-	if (!support) {
-		return QIcon();
-	}
-	auto overriden = OverridenIcon();
-	auto image = overriden.isNull()
-		? Platform::DefaultApplicationIcon()
-		: overriden;
-	ConvertIconToBlack(image);
-	return QIcon(Ui::PixmapFromImage(std::move(image)));
+	return QIcon(Ui::PixmapFromImage(RabbitAssets::currentAppLogo()));
 }
 
 QIcon CreateIcon(Main::Session *session, bool returnNullIfDefault) {
@@ -869,7 +860,7 @@ void MainWindow::updateTitle() {
 		: Dialogs::Key();
 	const auto thread = key ? key.thread() : nullptr;
 	if (!thread) {
-		setTitle((user.isEmpty() ? u"Telegram"_q : user) + added);
+		setTitle((user.isEmpty() ? u"rabbitGram"_q : user) + added);
 		return;
 	}
 	const auto history = thread->owningHistory();

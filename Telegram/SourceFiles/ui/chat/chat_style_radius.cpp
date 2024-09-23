@@ -1,13 +1,15 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/chat/chat_style_radius.h"
 #include "ui/chat/chat_style.h"
 #include "base/options.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "ui/chat/chat_theme.h"
 #include "ui/painter.h"
@@ -33,14 +35,7 @@ int BubbleRadiusSmall() {
 }
 
 int BubbleRadiusLarge() {
-	static const auto result = [] {
-		if (UseSmallMsgBubbleRadius.value()) {
-			return st::bubbleRadiusSmall;
-		} else {
-			return st::bubbleRadiusLarge;
-		}
-	}();
-	return result;
+	return RabbitSettings::JsonSettings::GetInt("bubble_radius") * .04 * st::bubbleRadiusLarge;
 }
 
 int MsgFileThumbRadiusSmall() {

@@ -1,11 +1,13 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_inner_widget.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "chat_helpers/stickers_emoji_pack.h"
 #include "core/file_utilities.h"
@@ -2132,7 +2134,11 @@ void HistoryInner::mouseDoubleClickEvent(QMouseEvent *e) {
 			mouseActionCancel();
 			switch (HistoryView::CurrentQuickAction()) {
 			case HistoryView::DoubleClickQuickAction::Reply: {
-				_widget->replyToMessage(view->data());
+				if (!Data::CanSendAnything(view->data()->history())) {
+					toggleFavoriteReaction(view);
+				} else {
+					_widget->replyToMessage(view->data());
+				}
 			} break;
 			case HistoryView::DoubleClickQuickAction::React: {
 				toggleFavoriteReaction(view);
@@ -3151,7 +3157,11 @@ TextForMimeData HistoryInner::getSelectedText() const {
 		const auto i = texts.emplace(item->position(), Part{
 			.name = item->author()->name(),
 			.time = QString(", [%1]\n").arg(
-				QLocale().toString(ItemDateTime(item), QLocale::ShortFormat)),
+				QLocale().toString(
+					ItemDateTime(item), 
+					RabbitSettings::JsonSettings::GetBool("show_seconds")
+						? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t")
+						: QLocale::system().timeFormat(QLocale::ShortFormat))),
 			.unwrapped = std::move(unwrapped),
 		}).first;
 		fullSize += i->second.name.size()
