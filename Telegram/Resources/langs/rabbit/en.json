@@ -26,7 +26,6 @@
 		"other": "Recent stickers: show {count} stickers"
 	},
 	"rtg_chats_recent_stickers_limit_none": "Recent stickers: hide all",
-    "rtg_chats_bubble_radius": "Message bubble radius: {value}",
     "rtg_show_actions_time": "Show actions time",
     "rtg_show_seconds": "Show time with seconds",
     "rtg_comma_after_mention": "Add comma after mention",

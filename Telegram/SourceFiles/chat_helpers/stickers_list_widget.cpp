@@ -2289,8 +2289,13 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 	result.reserve(cloudCount + recent.size() + customCount);
 	_custom.reserve(cloudCount + recent.size() + customCount);
 
+	auto recent_stickers_limit = []() {
+		return RabbitSettings::JsonSettings::GetBool("more_recent_stickers")
+			? 256 : 10;
+	};
+
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
-		if (result.size() >= RabbitSettings::JsonSettings::GetInt("recent_stickers_limit")) {
+		if (result.size() >= recent_stickers_limit()) {
 			return;
 		}
 		const auto i = ranges::find(result, document, &Sticker::document);

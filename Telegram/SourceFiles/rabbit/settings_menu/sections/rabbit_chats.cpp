@@ -66,57 +66,8 @@ namespace Settings {
 	void RabbitChats::SetupChats(not_null<Ui::VerticalLayout *> container) {
 		Ui::AddSubsectionTitle(container, rktr("rtg_settings_chats"));
 
-		const auto bubbleRadiusLabel = container->add(
-			object_ptr<Ui::LabelSimple>(
-				container,
-				st::settingsAudioVolumeLabel),
-			st::settingsAudioVolumeLabelPadding);
-		const auto bubbleRadiusSlider = container->add(
-			object_ptr<Ui::MediaSlider>(
-				container,
-				st::settingsAudioVolumeSlider),
-			st::settingsAudioVolumeSliderPadding);
-		const auto updateBubbleRadiusLabel = [=](int value) {
-			const auto val = QString::number(value);
-			bubbleRadiusLabel->setText(ktr("rtg_chats_bubble_radius", { "value", val }));
-		};
-		const auto updateBubbleRadius = [=](int value) {
-			updateBubbleRadiusLabel(value);
-			RabbitSettings::JsonSettings::Set("bubble_radius", value);
-			RabbitSettings::JsonSettings::Write();
-		};
-		bubbleRadiusSlider->resize(st::settingsAudioVolumeSlider.seekSize);
-		bubbleRadiusSlider->setPseudoDiscrete(
-			26,
-			[](int val) { return val; },
-			RabbitSettings::JsonSettings::GetInt("bubble_radius"),
-			updateBubbleRadius);
-		updateBubbleRadiusLabel(RabbitSettings::JsonSettings::GetInt("bubble_radius"));
-
-		AddButtonWithIcon(
-			container,
-			rktr("rtg_show_seconds"),
-			st::settingsButton,
-			IconDescriptor{ &st::menuIconReschedule }
-		)->toggleOn(
-			rpl::single(RabbitSettings::JsonSettings::GetBool("show_seconds"))
-		)->toggledValue(
-		) | rpl::filter([](bool enabled) {
-			return (enabled != RabbitSettings::JsonSettings::GetBool("show_seconds"));
-		}) | rpl::start_with_next([](bool enabled) {
-			RabbitSettings::JsonSettings::Set("show_seconds", enabled);
-			RabbitSettings::JsonSettings::Write();
-		}, container->lifetime());
-
-		SettingsMenuJsonSwitch(rtg_show_actions_time, show_actions_time);
-		SettingsMenuJsonSwitch(rtg_comma_after_mention, comma_after_mention);
-	}
-
-	void RabbitChats::SetupStickers(not_null<Ui::VerticalLayout *> container) {
-		Ui::AddSubsectionTitle(container, rktr("rtg_chats_stickers"));
-
-		const auto stickerPreview = container->add(
-			object_ptr<StickerSizePreview>(container),
+		const auto chatPreview = container->add(
+			object_ptr<ChatPreview>(container),
 			st::defaultSubsectionTitlePadding);
 
 		const auto stickerSizeLabel = container->add(
@@ -135,7 +86,7 @@ namespace Settings {
 		};
 		const auto updateStickerSize = [=](int value) {
 			updateStickerSizeLabel(value);
-			stickerPreview->repaint();
+			chatPreview->repaint();
 			RabbitSettings::JsonSettings::Set("sticker_size", value);
 			RabbitSettings::JsonSettings::Write();
 		};
@@ -146,35 +97,24 @@ namespace Settings {
 			RabbitSettings::JsonSettings::GetInt("sticker_size"),
 			updateStickerSize);
 		updateStickerSizeLabel(RabbitSettings::JsonSettings::GetInt("sticker_size"));
-
-		const auto recentStickersLimitLabel = container->add(
-			object_ptr<Ui::LabelSimple>(
-				container,
-				st::settingsAudioVolumeLabel),
-			st::settingsAudioVolumeLabelPadding);
-		const auto recentStickersLimitSlider = container->add(
-			object_ptr<Ui::MediaSlider>(
-				container,
-				st::settingsAudioVolumeSlider),
-			st::settingsAudioVolumeSliderPadding);
-		const auto updateRecentStickersLimitLabel = [=](int value) {
-			recentStickersLimitLabel->setText(
-				(value == 0)
-					? ktr("rtg_chats_recent_stickers_limit_none")
-					: ktr("rtg_chats_recent_stickers_limit", value, { "count", QString::number(value) }) );
-		};
-		const auto updateRecentStickersLimitHeight = [=](int value) {
-			updateRecentStickersLimitLabel(value);
-			RabbitSettings::JsonSettings::Set("recent_stickers_limit", value);
+		
+		AddButtonWithIcon(
+			container,
+			rktr("rtg_show_actions_time"),
+			st::settingsButton,
+			IconDescriptor{ &st::menuIconReschedule }
+		)->toggleOn(
+			rpl::single(RabbitSettings::JsonSettings::GetBool("show_actions_time"))
+		)->toggledValue(
+		) | rpl::filter([](bool enabled) {
+			return (enabled != RabbitSettings::JsonSettings::GetBool("show_actions_time"));
+		}) | rpl::start_with_next([](bool enabled) {
+			RabbitSettings::JsonSettings::Set("show_actions_time", enabled);
 			RabbitSettings::JsonSettings::Write();
-		};
-		recentStickersLimitSlider->resize(st::settingsAudioVolumeSlider.seekSize);
-		recentStickersLimitSlider->setPseudoDiscrete(
-			201,
-			[](int val) { return val; },
-			RabbitSettings::JsonSettings::GetInt("recent_stickers_limit"),
-			updateRecentStickersLimitHeight);
-		updateRecentStickersLimitLabel(RabbitSettings::JsonSettings::GetInt("recent_stickers_limit"));
+		}, container->lifetime());
+
+		SettingsMenuJsonSwitch(rtg_show_seconds, show_seconds);
+		SettingsMenuJsonSwitch(rtg_comma_after_mention, comma_after_mention);
 	}
 
 	void RabbitChats::SetupStickerShape(not_null<Ui::VerticalLayout *> container) {
@@ -185,6 +125,12 @@ namespace Settings {
 			st::defaultSubsectionTitlePadding);
 	}
 
+	void RabbitChats::SetupStickers(not_null<Ui::VerticalLayout *> container) {
+		Ui::AddSubsectionTitle(container, rktr("rtg_chats_stickers"));
+
+		SettingsMenuJsonSwitch(rtg_chats_more_recent_stickers, more_recent_stickers);
+	}
+
 	void RabbitChats::SetupRabbitChats(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
 		Ui::AddSkip(container);
 		SetupChats(container);
@@ -192,12 +138,12 @@ namespace Settings {
 		Ui::AddSkip(container);
 		Ui::AddDivider(container);
 		Ui::AddSkip(container);
-		SetupStickers(container);
+		SetupStickerShape(container);
 		
 		Ui::AddSkip(container);
 		Ui::AddDivider(container);
 		Ui::AddSkip(container);
-		SetupStickerShape(container);
+		SetupStickers(container);
 	}
 
 	void RabbitChats::setupContent(not_null<Window::SessionController *> controller) {
