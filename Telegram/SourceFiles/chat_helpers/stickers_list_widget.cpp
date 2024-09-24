@@ -63,6 +63,7 @@ namespace {
 
 constexpr auto kSearchRequestDelay = 400;
 constexpr auto kRecentDisplayLimit = 20;
+constexpr auto kRecentDisplayLimitMore = 200;
 constexpr auto kPreloadOfficialPages = 4;
 constexpr auto kOfficialLoadLimit = 40;
 constexpr auto kMinRepaintDelay = crl::time(33);
@@ -292,7 +293,7 @@ StickersListWidget::StickersListWidget(
 	}
 
 	RabbitSettings::JsonSettings::Events(
-		"recent_stickers_limit"
+		"more_recent_stickers"
 	) | rpl::start_with_next([=] {
 		refreshStickers();
 	}, lifetime());
@@ -2291,7 +2292,7 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 
 	auto recent_stickers_limit = []() {
 		return RabbitSettings::JsonSettings::GetBool("more_recent_stickers")
-			? 256 : 10;
+			? kRecentDisplayLimitMore : kRecentDisplayLimit;
 	};
 
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
