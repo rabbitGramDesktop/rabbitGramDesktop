@@ -205,7 +205,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.defaultValue = false, }},
 	{ "auto_hide_notifications", {
 		.type = SettingType::BoolSetting,
-		.defaultValue = false,  }},
+		.defaultValue = false, }},
+	{ "userpic_in_top_bar", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	//   Appearance
 	{ "app_icon", {
 		.type = SettingType::QStringSetting,

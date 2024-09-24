@@ -4,6 +4,7 @@
     "rtg_settings_general": "Основные",
     "rtg_general_streamer_mode": "Режим стримера",
     "rtg_general_auto_hide_notifications": "Скрывать уведомления автоматически",
+    "rtg_general_userpic_in_top_bar": "Показывать аватар вверху чата",
     "rtg_settings_appearance": "Внешний вид",
     "rtg_settings_app_icon": "Иконка приложения",
     "rtg_settings_userpic_rounding": "Скругление фото профиля: {radius}",
