@@ -11,6 +11,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_forum_topic.h"
 #include "data/data_saved_sublist.h"
 #include "data/data_session.h"
+#include "data/stickers/data_custom_emoji.h"
 #include "dialogs/dialogs_list.h"
 #include "dialogs/dialogs_three_state_icon.h"
 #include "dialogs/ui/dialogs_video_userpic.h"
@@ -468,7 +469,7 @@ void PaintRow(
 					: tr::lng_dialogs_text_with_from(
 						tr::now,
 						lt_from_part,
-						draftWrapped,
+						std::move(draftWrapped),
 						lt_message,
 						DialogsPreviewText({
 							.text = draft->textWithTags.text,
@@ -476,13 +477,22 @@ void PaintRow(
 								draft->textWithTags.tags),
 						}),
 						Text::WithEntities);
+				if (draft && draft->reply) {
+					auto &data = thread->owner().customEmojiManager();
+					const auto internal = data.registerInternalEmoji(
+						st::dialogsMiniReplyIcon,
+						{},
+						false);
+					draftText = Ui::Text::SingleCustomEmoji(
+						std::move(internal)).append(std::move(draftText));
+				}
 				const auto context = Core::MarkedTextContext{
 					.session = &thread->session(),
 					.customEmojiRepaint = customEmojiRepaint,
 				};
 				cache.setMarkedText(
 					st::dialogsTextStyle,
-					draftText,
+					std::move(draftText),
 					DialogTextOptions(),
 					context);
 			}
@@ -663,14 +673,22 @@ void PaintRow(
 			: context.selected
 			? st::dialogsNameFgOver
 			: st::dialogsNameFg);
-		rowName.drawElided(p, rectForName.left(), rectForName.top(), rectForName.width());
+		rowName.draw(p, {
+			.position = rectForName.topLeft(),
+			.availableWidth = rectForName.width(),
+			.elisionLines = 1,
+		});
 	} else if (hiddenSenderInfo) {
 		p.setPen(context.active
 			? st::dialogsNameFgActive
 			: context.selected
 			? st::dialogsNameFgOver
 			: st::dialogsNameFg);
-		hiddenSenderInfo->nameText().drawElided(p, rectForName.left(), rectForName.top(), rectForName.width());
+		hiddenSenderInfo->nameText().draw(p, {
+			.position = rectForName.topLeft(),
+			.availableWidth = rectForName.width(),
+			.elisionLines = 1,
+		});
 	} else {
 		p.setPen(context.active
 			? st::dialogsNameFgActive
@@ -681,7 +699,11 @@ void PaintRow(
 			: (context.selected
 				? st::dialogsNameFgOver
 				: st::dialogsNameFg));
-		rowName.drawElided(p, rectForName.left(), rectForName.top(), rectForName.width());
+		rowName.draw(p, {
+			.position = rectForName.topLeft(),
+			.availableWidth = rectForName.width(),
+			.elisionLines = 1,
+		});
 	}
 }
 

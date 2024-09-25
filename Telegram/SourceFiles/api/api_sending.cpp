@@ -44,7 +44,10 @@ void InnerFillMessagePostFlags(
 	if (ShouldSendSilent(peer, options)) {
 		flags |= MessageFlag::Silent;
 	}
-	if (!peer->amAnonymous()) {
+	if (!peer->amAnonymous()
+		|| (!peer->isBroadcast()
+			&& options.sendAs
+			&& options.sendAs != peer)) {
 		flags |= MessageFlag::HasFromId;
 	}
 	const auto channel = peer->asBroadcast();
@@ -544,7 +547,7 @@ void SendConfirmedFile(
 				MTP_flags(Flag::f_document
 					| (file->spoiler ? Flag::f_spoiler : Flag())),
 				file->document,
-				MTPDocument(), // alt_document
+				MTPVector<MTPDocument>(), // alt_documents
 				MTPint());
 		} else if (file->type == SendMediaType::Audio) {
 			const auto ttlSeconds = file->to.options.ttlSeconds;
@@ -569,7 +572,7 @@ void SendConfirmedFile(
 					| (isVoice ? Flag::f_voice : Flag())
 					| (ttlSeconds ? Flag::f_ttl_seconds : Flag())),
 				file->document,
-				MTPDocument(), // alt_document
+				MTPVector<MTPDocument>(), // alt_documents
 				MTP_int(ttlSeconds));
 		} else {
 			Unexpected("Type in sendFilesConfirmed.");

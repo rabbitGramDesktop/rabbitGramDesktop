@@ -18,10 +18,10 @@ protected:
 	void paintEvent(QPaintEvent* e) override;
 };
 
-class StickerSizePreview : public Ui::RpWidget
+class ChatPreview : public Ui::RpWidget
 {
 public:
-	StickerSizePreview(QWidget* parent);
+	ChatPreview(QWidget* parent);
 
 protected:
 	void paintEvent(QPaintEvent* e) override;

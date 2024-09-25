@@ -238,6 +238,12 @@ public:
 	void setIncludeMutedCounter(bool value) {
 		_includeMutedCounter = value;
 	}
+	[[nodiscard]] bool includeMutedCounterFolders() const {
+		return _includeMutedCounterFolders;
+	}
+	void setIncludeMutedCounterFolders(bool value) {
+		_includeMutedCounterFolders = value;
+	}
 	[[nodiscard]] bool countUnreadMessages() const {
 		return _countUnreadMessages;
 	}
@@ -388,7 +394,11 @@ public:
 		_sendSubmitWay = value;
 	}
 	[[nodiscard]] Ui::InputSubmitSettings sendSubmitWay() const {
-		return _sendSubmitWay;
+		return _sendSubmitWay.current();
+	}
+	[[nodiscard]] auto sendSubmitWayValue() const
+	-> rpl::producer<Ui::InputSubmitSettings> {
+		return _sendSubmitWay.value();
 	}
 	void setSoundOverride(const QString &key, const QString &path) {
 		_soundOverrides.emplace(key, path);
@@ -947,6 +957,7 @@ private:
 	int _notificationsCount = 3;
 	ScreenCorner _notificationsCorner = ScreenCorner::BottomRight;
 	bool _includeMutedCounter = true;
+	bool _includeMutedCounterFolders = true;
 	bool _countUnreadMessages = true;
 	rpl::variable<bool> _notifyAboutPinned = true;
 	int _autoLock = 3600;
@@ -966,7 +977,8 @@ private:
 	Window::Theme::AccentColors _themesAccentColors;
 	bool _lastSeenWarningSeen = false;
 	Ui::SendFilesWay _sendFilesWay = Ui::SendFilesWay();
-	Ui::InputSubmitSettings _sendSubmitWay = Ui::InputSubmitSettings();
+	rpl::variable<Ui::InputSubmitSettings> _sendSubmitWay
+		= Ui::InputSubmitSettings();
 	base::flat_map<QString, QString> _soundOverrides;
 	base::flat_set<QString> _noWarningExtensions;
 	bool _ipRevealWarning = true;

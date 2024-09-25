@@ -10,6 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/rp_widget.h"
 #include "ui/widgets/scroll_area.h"
 #include "ui/wrap/fade_wrap.h"
+#include "ui/ui_utility.h"
 
 namespace Ui {
 

@@ -8,6 +8,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "chat_helpers/tabbed_section.h"
 
 #include "chat_helpers/tabbed_selector.h"
+#include "ui/ui_utility.h"
 #include "window/window_session_controller.h"
 #include "styles/style_chat_helpers.h"
 

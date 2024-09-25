@@ -205,7 +205,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.defaultValue = false, }},
 	{ "auto_hide_notifications", {
 		.type = SettingType::BoolSetting,
-		.defaultValue = false,  }},
+		.defaultValue = false, }},
+	{ "userpic_in_top_bar", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	//   Appearance
 	{ "app_icon", {
 		.type = SettingType::QStringSetting,
@@ -247,25 +250,20 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::IntSetting,
 		.defaultValue = 170,
 		.limitHandler = IntLimit(64, 256, 170), }},
-	{ "recent_stickers_limit", {
-		.type = SettingType::IntSetting,
-		.defaultValue = 20,
-		.limitHandler = IntLimit(0, 200, 20), }},
+	{ "show_actions_time", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false }},
+	{ "show_seconds", {
+		.type = SettingType::BoolSetting,
+		.defaultValue  = false, }},
+	{ "comma_after_mention", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	{ "sticker_shape", {
 		.type = SettingType::IntSetting,
 		.defaultValue = 0,
 		.limitHandler = IntLimit(0, 2, 0), }},
-	{ "bubble_radius", {
-		.type = SettingType::IntSetting,
-		.defaultValue = 25,
-		.limitHandler = IntLimit(0, 25, 25), }},
-	{ "show_seconds", {
-		.type = SettingType::BoolSetting,
-		.defaultValue  = false, }},
-	{ "show_actions_time", {
-		.type = SettingType::BoolSetting,
-		.defaultValue = false }},
-	{ "comma_after_mention", {
+	{ "more_recent_stickers", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
 	//   Miscellaneous

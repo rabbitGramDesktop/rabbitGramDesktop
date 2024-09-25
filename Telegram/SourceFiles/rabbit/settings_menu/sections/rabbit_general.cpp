@@ -65,6 +65,7 @@ namespace Settings {
     void RabbitGeneral::SetupGeneral(not_null<Ui::VerticalLayout *> container) {
         SettingsMenuJsonSwitch(rtg_general_streamer_mode, streamer_mode);
         SettingsMenuJsonSwitch(rtg_general_auto_hide_notifications, auto_hide_notifications);
+        SettingsMenuJsonSwitch(rtg_general_userpic_in_top_bar, userpic_in_top_bar);
     }
 
     void RabbitGeneral::SetupRabbitGeneral(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {

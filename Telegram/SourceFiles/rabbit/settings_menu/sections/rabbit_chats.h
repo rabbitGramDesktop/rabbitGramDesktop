@@ -27,9 +27,9 @@ namespace Settings {
 
     private:
         void SetupChats(not_null<Ui::VerticalLayout *> container);
-        void SetupStickers(not_null<Ui::VerticalLayout *> container);
         void SetupStickerShape(not_null<Ui::VerticalLayout *> container);
-        
+        void SetupStickers(not_null<Ui::VerticalLayout *> container);
+
         void SetupRabbitChats(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> null);
         void setupContent(not_null<Window::SessionController *> controller);
     };

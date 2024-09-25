@@ -19,6 +19,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/tooltip.h"
 #include "ui/dynamic_image.h"
 #include "ui/painter.h"
+#include "ui/ui_utility.h"
 #include "styles/style_dialogs.h"
 
 #include <QtWidgets/QApplication>

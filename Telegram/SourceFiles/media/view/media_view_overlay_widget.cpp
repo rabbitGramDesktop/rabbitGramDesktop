@@ -34,10 +34,12 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/text/format_values.h"
 #include "ui/item_text_options.h"
 #include "ui/painter.h"
+#include "ui/rect.h"
 #include "ui/power_saving.h"
 #include "ui/cached_round_corners.h"
 #include "ui/gl/gl_window.h"
 #include "ui/boxes/confirm_box.h"
+#include "ui/ui_utility.h"
 #include "info/info_memento.h"
 #include "info/info_controller.h"
 #include "info/statistics/info_statistics_widget.h"
@@ -99,7 +101,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include <QtGui/QGuiApplication>
 #include <QtGui/QWindow>
 #include <QtGui/QScreen>
-#include <QGraphicsOpacityEffect>
 
 #include <kurlmimedata.h>
 
@@ -226,6 +227,73 @@ QWidget *PipDelegate::pipParentWidget() {
 }
 
 } // namespace
+
+class OverlayWidget::SponsoredButton : public Ui::RippleButton {
+public:
+	SponsoredButton(QWidget *parent)
+	: Ui::RippleButton(parent, st::mediaviewSponsoredButton.ripple) {
+	}
+
+	void setText(QString text) {
+		_text = Ui::Text::String(
+			st::mediaviewSponsoredButton.style,
+			std::move(text),
+			kDefaultTextOptions,
+			width());
+		resize(width(), _text.minHeight() * 2);
+	}
+	void setOpacity(float opacity) {
+		_opacity = opacity;
+	}
+
+protected:
+	void paintEvent(QPaintEvent *e) override {
+		auto p = QPainter(this);
+		const auto &st = st::mediaviewSponsoredButton;
+
+		p.setOpacity(_opacity);
+
+		const auto over = Ui::AbstractButton::isOver();
+		const auto down = Ui::AbstractButton::isDown();
+		{
+			auto hq = PainterHighQualityEnabler(p);
+			p.setPen(Qt::NoPen);
+			p.setBrush((over || down) ? st.textBgOver : st.textBg);
+			p.drawRoundedRect(
+				rect(),
+				st::mediaviewCaptionRadius,
+				st::mediaviewCaptionRadius);
+		}
+
+		Ui::RippleButton::paintRipple(p, 0, 0);
+
+		p.setPen(st.textFg);
+		p.setBrush(Qt::NoBrush);
+		_text.draw(p, {
+			.position = QPoint(
+				(width() - _text.maxWidth()) / 2,
+				(height() - _text.minHeight()) / 2),
+			.outerWidth = width(),
+			.availableWidth = width(),
+		});
+	}
+
+	QImage prepareRippleMask() const override {
+		return Ui::RippleAnimation::RoundRectMask(
+			size(),
+			st::mediaviewCaptionRadius);
+	}
+	QPoint prepareRippleStartPosition() const override {
+		return mapFromGlobal(QCursor::pos())
+			- rect::m::pos::tl(st::mediaviewSponsoredButton.padding);
+	}
+
+private:
+	Ui::Text::String _text;
+	float64 _opacity = 1.;
+
+};
+
 
 struct OverlayWidget::SharedMedia {
 	SharedMedia(SharedMediaKey key) : key(key) {
@@ -792,20 +860,12 @@ void OverlayWidget::moveToScreen(bool inMove) {
 	if (!_fullscreen || _wasWindowedMode) {
 		return;
 	}
-	const auto widgetScreen = [&](auto &&widget) -> QScreen* {
-		if (!widget) {
-			return nullptr;
-		}
-		if (const auto screen = QGuiApplication::screenAt(
-				widget->geometry().center())) {
-			return screen;
-		}
-		return widget->screen();
-	};
 	const auto applicationWindow = Core::App().activeWindow()
 		? Core::App().activeWindow()->widget().get()
 		: nullptr;
-	const auto activeWindowScreen = widgetScreen(applicationWindow);
+	const auto activeWindowScreen = applicationWindow
+		? applicationWindow->screen()
+		: nullptr;
 	const auto myScreen = _window->screen();
 	if (activeWindowScreen && myScreen != activeWindowScreen) {
 		const auto screenList = QGuiApplication::screens();
@@ -815,6 +875,7 @@ void OverlayWidget::moveToScreen(bool inMove) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		_window->setScreen(activeWindowScreen);
 #else // Qt >= 6.0.0
+		_window->createWinId();
 		window()->setScreen(activeWindowScreen);
 #endif // Qt < 6.0.0
 		DEBUG_LOG(("Viewer Pos: New actual screen: %1")
@@ -912,7 +973,7 @@ void OverlayWidget::savePosition() {
 
 void OverlayWidget::updateGeometry(bool inMove) {
 	initFullScreen();
-	if (_fullscreen && (!Platform::IsWindows11OrGreater() || !isHidden())) {
+	if (_fullscreen) {
 		updateGeometryToScreen(inMove);
 	} else if (_windowed && _normalGeometryInited) {
 		DEBUG_LOG(("Viewer Pos: Setting %1, %2, %3, %4")
@@ -937,35 +998,15 @@ void OverlayWidget::updateGeometry(bool inMove) {
 
 void OverlayWidget::updateGeometryToScreen(bool inMove) {
 	const auto available = _window->screen()->geometry();
-	const auto openglWidget = _opengl
-		? static_cast<QOpenGLWidget*>(_widget.get())
-		: nullptr;
-	const auto possibleSizeHack = Platform::IsWindows() && openglWidget;
-	const auto useSizeHack = possibleSizeHack
-		&& (openglWidget->format().renderableType()
-			!= QSurfaceFormat::OpenGLES);
-	const auto use = useSizeHack
-		? available.marginsAdded({ 0, 0, 0, 1 })
-		: available;
-	const auto mask = useSizeHack
-		? QRegion(QRect(QPoint(), available.size()))
-		: QRegion();
-	if (inMove && use.contains(_window->geometry())) {
-		return;
-	}
-	if ((_window->geometry() == use)
-		&& (!possibleSizeHack || _window->mask() == mask)) {
+	if (_window->geometry() == available) {
 		return;
 	}
 	DEBUG_LOG(("Viewer Pos: Setting %1, %2, %3, %4")
-		.arg(use.x())
-		.arg(use.y())
-		.arg(use.width())
-		.arg(use.height()));
-	_window->setGeometry(use);
-	if (possibleSizeHack) {
-		_window->setMask(mask);
-	}
+		.arg(available.x())
+		.arg(available.y())
+		.arg(available.width())
+		.arg(available.height()));
+	_window->setGeometry(available);
 }
 
 void OverlayWidget::updateControlsGeometry() {
@@ -1810,9 +1851,9 @@ bool OverlayWidget::updateControlsAnimation(crl::time now) {
 	} else {
 		_controlsOpacity.update(dt, anim::linear);
 	}
-	if (_sponsoredButtonOpacity && _sponsoredButton) {
+	if (_sponsoredButton) {
 		const auto value = _controlsOpacity.current();
-		_sponsoredButtonOpacity->setOpacity(value);
+		_sponsoredButton->setOpacity(value);
 		_sponsoredButton->setAttribute(
 			Qt::WA_TransparentForMouseEvents,
 			value < 1);
@@ -3674,21 +3715,18 @@ void OverlayWidget::initSponsoredButton() {
 	} else if (!has && !_sponsoredButton) {
 		return;
 	}
-	const auto &component = _session->sponsoredMessages();
-	const auto details = component.lookupDetails(_message->fullId());
-	_sponsoredButton = base::make_unique_q<Ui::RoundButton>(
-		_body,
-		rpl::single(details.buttonText),
-		st::mediaviewSponsoredButton);
+	const auto sponsoredMessages = &_session->sponsoredMessages();
+	const auto fullId = _message->fullId();
+	const auto details = sponsoredMessages->lookupDetails(fullId);
+	_sponsoredButton = base::make_unique_q<SponsoredButton>(_body);
+	_sponsoredButton->setText(details.buttonText);
+	_sponsoredButton->setOpacity(1.0);
 
 	_sponsoredButton->setClickedCallback([=, link = details.link] {
 		UrlClickHandler::Open(link);
+		sponsoredMessages->clicked(fullId, false, true);
 		hide();
 	});
-	_sponsoredButtonOpacity = base::make_unique_q<QGraphicsOpacityEffect>(
-		_sponsoredButton.get());
-	_sponsoredButtonOpacity->setOpacity(1.0);
-    _sponsoredButton->setGraphicsEffect(_sponsoredButtonOpacity.get());
 }
 
 void OverlayWidget::updateThemePreviewGeometry() {
@@ -3742,9 +3780,6 @@ void OverlayWidget::showAndActivate() {
 		_wasWindowedMode = true;
 	} else if (_fullscreen) {
 		_window->showFullScreen();
-		if (Platform::IsWindows11OrGreater()) {
-			updateGeometry();
-		}
 	} else {
 		_window->showMaximized();
 	}
@@ -4916,7 +4951,7 @@ void OverlayWidget::paintThemePreviewContent(
 			+ (_themeShare->y() - _themePreviewRect.y())
 			+ st::themePreviewCancelButton.padding.top()
 			+ st::themePreviewCancelButton.textTop
-			+ st::themePreviewCancelButton.font->ascent;
+			+ st::themePreviewCancelButton.style.font->ascent;
 		p.drawText(
 			left,
 			baseline,
@@ -5986,8 +6021,19 @@ void OverlayWidget::handleMouseRelease(
 	} else if (_over == Over::Video && _down == Over::Video) {
 		if (_stories) {
 			_stories->contentPressed(false);
-		} else if (_streamed) {
-			playbackPauseResume();
+		} else if (_streamed && !_window->mousePressCancelled()) {
+			if (_sponsoredButton && _session && _message) {
+				const auto sponsoredMessages = &_session->sponsoredMessages();
+				const auto fullId = _message->fullId();
+				const auto details = sponsoredMessages->lookupDetails(fullId);
+				if (const auto link = details.link; !link.isEmpty()) {
+					UrlClickHandler::Open(link);
+					sponsoredMessages->clicked(fullId, true, true);
+					hide();
+				}
+			} else {
+				playbackPauseResume();
+			}
 		}
 	} else if (_pressed) {
 		if (_dragging) {
@@ -6297,7 +6343,6 @@ void OverlayWidget::clearBeforeHide() {
 	_helper->setControlsOpacity(1.);
 	_groupThumbs = nullptr;
 	_groupThumbsRect = QRect();
-	_sponsoredButtonOpacity = nullptr;
 	_sponsoredButton = nullptr;
 }
 

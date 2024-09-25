@@ -24,6 +24,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/wrap/padding_wrap.h"
 #include "ui/text/text_utilities.h"
 #include "ui/text/text_options.h"
+#include "ui/ui_utility.h"
 #include "styles/style_passport.h"
 #include "styles/style_layers.h"
 #include "styles/style_boxes.h"

@@ -23,6 +23,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "lottie/lottie_single_player.h"
 #include "base/random.h"
 #include "ui/power_saving.h"
+#include "ui/ui_utility.h"
 #include "styles/style_chat.h"
 
 namespace HistoryView {

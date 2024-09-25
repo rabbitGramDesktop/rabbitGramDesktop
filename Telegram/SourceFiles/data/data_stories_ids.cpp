@@ -12,6 +12,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_session.h"
 #include "data/data_stories.h"
 #include "main/main_session.h"
+#include "ui/ui_utility.h"
 
 namespace Data {
 

@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"
 #include "boxes/add_contact_box.h"
@@ -600,11 +602,11 @@ void TopBarWidget::paintTopBar(Painter &p) {
 		const auto namewidth = availableWidth - badgeWidth;
 
 		p.setPen(st::dialogsNameFg);
-		_title.drawElided(
-			p,
-			nameleft,
-			nametop,
-			namewidth);
+		_title.draw(p, {
+			.position = { nameleft, nametop },
+			.availableWidth = namewidth,
+			.elisionLines = 1,
+		});
 
 		p.setFont(st::dialogsTextFont);
 		if (!paintConnectingState(p, nameleft, statustop, width())
@@ -1110,7 +1112,7 @@ void TopBarWidget::updateControlsVisibility() {
 	_cancelChoose->setVisible(_chooseForReportReason.has_value());
 	if (_info) {
 		_info->setVisible(!_chooseForReportReason
-			&& (isOneColumn || !_primaryWindow));
+			&& (isOneColumn || RabbitSettings::JsonSettings::GetBool("userpic_in_top_bar") || !_primaryWindow));
 	}
 	if (_unreadBadge) {
 		_unreadBadge->setVisible(!_chooseForReportReason

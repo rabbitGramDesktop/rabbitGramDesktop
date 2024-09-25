@@ -11,6 +11,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "boxes/peer_list_box.h"
 #include "lang/lang_keys.h"
 #include "data/data_poll.h"
+#include "ui/ui_utility.h"
 
 namespace Info {
 namespace Polls {

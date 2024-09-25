@@ -16,6 +16,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/labels.h"
 #include "ui/click_handler.h"
 #include "ui/painter.h"
+#include "ui/ui_utility.h"
 #include "styles/style_media_view.h"
 
 namespace Media::Stories {
