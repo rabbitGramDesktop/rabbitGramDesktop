@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "dialogs/ui/dialogs_stories_list.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "base/event_filter.h"
 #include "base/qt_signal_producer.h"
 #include "lang/lang_keys.h"
@@ -529,7 +531,8 @@ void List::paint(
 			if (!fullUnreadCount) {
 				p.setPen(QPen(gradient, line));
 				p.setBrush(Qt::NoBrush);
-				p.drawEllipse(outer);
+				auto radius = outer.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+				p.drawRoundedRect(outer, radius, radius);
 			} else {
 				validateSegments(itemFull, gradient, line, true);
 				Ui::PaintOutlineSegments(
@@ -570,7 +573,8 @@ void List::paint(
 			p.setCompositionMode(QPainter::CompositionMode_Source);
 			p.setPen(Qt::NoPen);
 			p.setBrush(st::transparent);
-			p.drawEllipse(rect);
+			auto radius = rect.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+			p.drawRoundedRect(rect, radius, radius);
 			p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 		}
 		if (hasReadLine) {
