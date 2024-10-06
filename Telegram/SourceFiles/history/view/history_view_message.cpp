@@ -2367,15 +2367,20 @@ bool Message::hasFromPhoto() const {
 	case Context::SavedSublist:
 	case Context::ScheduledTopic: {
 		const auto item = data();
-		if (item->isPostHidingAuthor()) {
+		if (item->isSponsored()) {
+			return false;
+		} else if (item->isPostHidingAuthor()) {
 			return false;
 		} else if (item->isPost()) {
 			return true;
 		} else if (item->isEmpty()
+			|| item->isFakeAboutView()
 			|| (context() == Context::Replies && item->isDiscussionPost())) {
 			return false;
 		} else if (delegate()->elementIsChatWide()) {
 			return true;
+		} else if (item->history()->peer->isVerifyCodes()) {
+			return !hasOutLayout();
 		} else if (const auto forwarded = item->Get<HistoryMessageForwarded>()) {
 			const auto peer = item->history()->peer;
 			if (peer->isSelf() || peer->isRepliesChat()) {
@@ -2398,8 +2403,10 @@ TextState Message::textState(
 	const auto media = this->media();
 
 	auto result = TextState(item);
+	const auto visibleMediaTextLen = visibleMediaTextLength();
+	const auto visibleTextLen = visibleTextLength();
 	const auto minSymbol = (_invertMedia && request.onlyMessageText)
-		? visibleMediaTextLength()
+		? visibleMediaTextLen
 		: 0;
 	result.symbol = minSymbol;
 
@@ -2426,6 +2433,7 @@ TextState Message::textState(
 		g.setHeight(g.height() - reactionsHeight);
 		const auto reactionsPosition = QPoint(reactionsLeft + g.left(), g.top() + g.height() + st::mediaInBubbleSkip);
 		if (_reactions->getState(point - reactionsPosition, &result)) {
+			result.symbol += visibleMediaTextLen + visibleTextLen;
 			return result;
 		}
 	}
@@ -2441,6 +2449,7 @@ TextState Message::textState(
 
 		auto inner = g;
 		if (getStateCommentsButton(point, inner, &result)) {
+			result.symbol += visibleMediaTextLen + visibleTextLen;
 			return result;
 		}
 		auto trect = inner.marginsRemoved(st::msgPadding);
@@ -2458,6 +2467,7 @@ TextState Message::textState(
 			trect.setHeight(trect.height() - reactionsHeight);
 			const auto reactionsPosition = QPoint(trect.left(), trect.top() + trect.height() + reactionsTop);
 			if (_reactions->getState(point - reactionsPosition, &result)) {
+				result.symbol += visibleMediaTextLen + visibleTextLen;
 				return result;
 			}
 		}
@@ -2473,6 +2483,7 @@ TextState Message::textState(
 						? inner
 						: inner - heightMargins),
 					&result)) {
+				result.symbol += visibleMediaTextLen + visibleTextLen;
 				return result;
 			}
 			if (belowInfo) {
@@ -2550,7 +2561,11 @@ TextState Message::textState(
 				result = bottomInfoResult;
 			}
 		};
-		if (result.symbol <= minSymbol && inBubble) {
+		if (!inBubble) {
+			if (point.y() >= g.y() + g.height()) {
+				result.symbol += visibleTextLen + visibleMediaTextLen;
+			}
+		} else if (result.symbol <= minSymbol) {
 			const auto mediaHeight = mediaDisplayed ? media->height() : 0;
 			const auto mediaLeft = trect.x() - st::msgPadding.left();
 			const auto mediaTop = (!mediaDisplayed || _invertMedia)
@@ -2573,22 +2588,21 @@ TextState Message::textState(
 						result.cursor = CursorState::None;
 					}
 				} else if (request.onlyMessageText) {
-					result.symbol = visibleTextLength();
+					result.symbol = visibleTextLen;
 					result.afterSymbol = false;
 					result.cursor = CursorState::None;
 				} else {
-					result.symbol += visibleTextLength();
+					result.symbol += visibleTextLen;
 				}
 			} else if (getStateText(point, trect, &result, request)) {
 				if (_invertMedia) {
-					result.symbol += visibleMediaTextLength();
+					result.symbol += visibleMediaTextLen;
 				}
 				result.overMessageText = true;
 				checkBottomInfoState();
 				return result;
 			} else if (point.y() >= trect.y() + trect.height()) {
-				result.symbol = visibleTextLength()
-					+ visibleMediaTextLength();
+				result.symbol = visibleTextLen + visibleMediaTextLen;
 			}
 		}
 		checkBottomInfoState();
