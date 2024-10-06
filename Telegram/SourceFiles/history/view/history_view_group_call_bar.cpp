@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_group_call_bar.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "data/data_channel.h"
 #include "data/data_user.h"
 #include "data/data_changes.h"
@@ -38,13 +40,16 @@ void GenerateUserpicsInRow(
 	const auto single = st.size;
 	const auto shift = st.shift;
 	const auto width = single + (limit - 1) * (single - shift);
-	if (result.width() != width * style::DevicePixelRatio()) {
+	const auto radius = single * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
+
+	const auto ratio = style::DevicePixelRatio();
+	if (result.width() != width * ratio) {
 		result = QImage(
-			QSize(width, single) * style::DevicePixelRatio(),
+			QSize(width, single) * ratio,
 			QImage::Format_ARGB32_Premultiplied);
 	}
 	result.fill(Qt::transparent);
-	result.setDevicePixelRatio(style::DevicePixelRatio());
+	result.setDevicePixelRatio(ratio);
 
 	auto q = Painter(&result);
 	auto hq = PainterHighQualityEnabler(q);
@@ -54,12 +59,12 @@ void GenerateUserpicsInRow(
 	for (auto i = count; i != 0;) {
 		auto &entry = list[--i];
 		q.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		entry.peer->paintUserpic(q, entry.view, x, 0, single);
+		entry.peer->paintUserpic(q, entry.view, x, 0, single, true);
 		entry.uniqueKey = entry.peer->userpicUniqueKey(entry.view);
 		q.setCompositionMode(QPainter::CompositionMode_Source);
 		q.setBrush(Qt::NoBrush);
 		q.setPen(pen);
-		q.drawEllipse(x, 0, single, single);
+		q.drawRoundedRect(x, 0, single, single, radius, radius);
 		x -= single - shift;
 	}
 }
