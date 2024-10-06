@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_group_call_bar.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "data/data_channel.h"
 #include "data/data_user.h"
 #include "data/data_changes.h"
@@ -38,6 +40,7 @@ void GenerateUserpicsInRow(
 	const auto single = st.size;
 	const auto shift = st.shift;
 	const auto width = single + (limit - 1) * (single - shift);
+	const auto radius = single * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.;
 	if (result.width() != width * style::DevicePixelRatio()) {
 		result = QImage(
 			QSize(width, single) * style::DevicePixelRatio(),
@@ -59,7 +62,7 @@ void GenerateUserpicsInRow(
 		q.setCompositionMode(QPainter::CompositionMode_Source);
 		q.setBrush(Qt::NoBrush);
 		q.setPen(pen);
-		q.drawEllipse(x, 0, single, single);
+		q.drawRoundedRect(x, 0, single, single, radius, radius);
 		x -= single - shift;
 	}
 }
