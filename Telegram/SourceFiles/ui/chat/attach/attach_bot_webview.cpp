@@ -592,7 +592,7 @@ bool Panel::showWebview(
 			callback(tr::lng_bot_terms(tr::now), [=] {
 				File::OpenUrl(tr::lng_mini_apps_tos_url(tr::now));
 			}, &st::menuIconGroupLog);
-			callback(tr::lng_profile_bot_privacy(tr::now), [=] {
+			callback(tr::lng_bot_privacy(tr::now), [=] {
 				_delegate->botOpenPrivacyPolicy();
 			}, &st::menuIconAntispam);
 		}
@@ -1263,7 +1263,11 @@ void Panel::processButtonMessage(
 		.text = args["text"].toString(),
 	});
 	if (button.get() == _secondaryButton.get()) {
-		_secondaryPosition = ParsePosition(args["position"].toString());
+		const auto position = ParsePosition(args["position"].toString());
+		if (_secondaryPosition != position) {
+			_secondaryPosition = position;
+			layoutButtons();
+		}
 	}
 }
 

@@ -52,6 +52,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "statistics/widgets/chart_header_widget.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/controls/userpic_button.h"
+#include "ui/dynamic_image.h"
+#include "ui/dynamic_thumbnails.h"
 #include "ui/effects/credits_graphics.h"
 #include "ui/effects/premium_graphics.h"
 #include "ui/effects/premium_stars_colored.h"
@@ -772,9 +774,15 @@ void ReceiptCreditsBox(
 			GenericEntryPhoto(content, callback, stUser.photoSize)));
 		AddViewMediaHandler(thumb->entity(), controller, e);
 	} else if (peer && !e.gift) {
-		content->add(object_ptr<Ui::CenterWrap<>>(
-			content,
-			object_ptr<Ui::UserpicButton>(content, peer, stUser)));
+		if (e.subscriptionUntil.isNull() && s.until.isNull()) {
+			content->add(object_ptr<Ui::CenterWrap<>>(
+				content,
+				object_ptr<Ui::UserpicButton>(content, peer, stUser)));
+		} else {
+			content->add(object_ptr<Ui::CenterWrap<>>(
+				content,
+				SubscriptionUserpic(content, peer, stUser.photoSize)));
+		}
 	} else if (e.gift || isPrize) {
 		struct State final {
 			DocumentData *sticker = nullptr;
@@ -782,10 +790,13 @@ void ReceiptCreditsBox(
 			std::unique_ptr<Lottie::SinglePlayer> lottie;
 			rpl::lifetime downloadLifetime;
 		};
-		Ui::AddSkip(content, st::creditsHistoryEntryGiftStickerSpace
-			- (isStarGift ? st::creditsHistoryEntryGiftStickerSkip : 0));
+		Ui::AddSkip(content, isStarGift
+			? st::creditsHistoryEntryStarGiftSpace
+			: st::creditsHistoryEntryGiftStickerSpace);
 		const auto icon = Ui::CreateChild<Ui::RpWidget>(content);
-		icon->resize(Size(st::creditsHistoryEntryGiftStickerSize));
+		icon->resize(Size(isStarGift
+			? st::creditsHistoryEntryStarGiftSize
+			: st::creditsHistoryEntryGiftStickerSize));
 		const auto state = icon->lifetime().make_state<State>();
 		auto &packs = session->giftBoxStickersPacks();
 		const auto document = starGiftSticker
@@ -834,9 +845,9 @@ void ReceiptCreditsBox(
 		}, icon->lifetime());
 		content->sizeValue(
 		) | rpl::start_with_next([=](const QSize &size) {
-			icon->move(
-				(size.width() - icon->width()) / 2,
-				isStarGift ? 0 : st::creditsHistoryEntryGiftStickerSkip);
+			icon->move((size.width() - icon->width()) / 2, isStarGift
+				? st::creditsHistoryEntryStarGiftSkip
+				: st::creditsHistoryEntryGiftStickerSkip);
 		}, icon->lifetime());
 	} else {
 		const auto widget = content->add(
@@ -1538,6 +1549,35 @@ object_ptr<Ui::RpWidget> PaidMediaThumbnail(
 		photoSize);
 }
 
+object_ptr<Ui::RpWidget> SubscriptionUserpic(
+		not_null<Ui::RpWidget*> parent,
+		not_null<PeerData*> peer,
+		int photoSize) {
+	auto widget = object_ptr<Ui::RpWidget>(parent);
+	const auto raw = widget.data();
+	widget->resize(photoSize, photoSize);
+	const auto userpicMedia = Ui::MakeUserpicThumbnail(peer, false);
+	userpicMedia->subscribeToUpdates([=] { raw->update(); });
+	const auto creditsIconSize = photoSize / 3;
+	const auto creditsIconCallback =
+		Ui::PaintOutlinedColoredCreditsIconCallback(
+			creditsIconSize,
+			1.5);
+	widget->paintRequest() | rpl::start_with_next([=] {
+		auto p = QPainter(raw);
+		p.fillRect(Rect(Size(photoSize)), Qt::transparent);
+		auto image = userpicMedia->image(photoSize);
+		{
+			auto q = QPainter(&image);
+			q.translate(photoSize, photoSize);
+			q.translate(-creditsIconSize, -creditsIconSize);
+			creditsIconCallback(q);
+		}
+		p.drawImage(0, 0, image);
+	}, widget->lifetime());
+	return widget;
+}
+
 void SmallBalanceBox(
 		not_null<Ui::GenericBox*> box,
 		std::shared_ptr<Main::SessionShow> show,
@@ -1555,13 +1595,17 @@ void SmallBalanceBox(
 
 	const auto owner = &show->session().data();
 	const auto name = v::match(source, [&](SmallBalanceBot value) {
-		return owner->peer(peerFromUser(value.botId))->name();
+		return value.botId
+			? owner->peer(peerFromUser(value.botId))->name()
+			: QString();
 	}, [&](SmallBalanceReaction value) {
 		return owner->peer(peerFromChannel(value.channelId))->name();
 	}, [](SmallBalanceSubscription value) {
 		return value.name;
 	}, [](SmallBalanceDeepLink value) {
 		return QString();
+	}, [&](SmallBalanceStarGift value) {
+		return owner->peer(peerFromUser(value.userId))->shortName();
 	});
 
 	auto needed = show->session().credits().balanceValue(
@@ -1591,6 +1635,14 @@ void SmallBalanceBox(
 					: v::is<SmallBalanceDeepLink>(source)
 					? DeepLinkBalanceAbout(
 						v::get<SmallBalanceDeepLink>(source).purpose)
+					: v::is<SmallBalanceStarGift>(source)
+					? tr::lng_credits_small_balance_star_gift(
+						lt_user,
+						rpl::single(Ui::Text::Bold(name)),
+						Ui::Text::RichLangValue)
+					: name.isEmpty()
+					? tr::lng_credits_small_balance_fallback(
+						Ui::Text::RichLangValue)
 					: tr::lng_credits_small_balance_about(
 						lt_bot,
 						rpl::single(TextWithEntities{ name }),

@@ -222,7 +222,7 @@ QByteArray Settings::serialize() const {
 		+ Serialize::stringSize(_customFontFamily)
 		+ sizeof(qint32) * 3
 		+ Serialize::bytearraySize(_tonsiteStorageToken)
-		+ sizeof(qint32);
+		+ sizeof(qint32) * 4;
 
 	auto result = QByteArray();
 	result.reserve(size);
@@ -377,7 +377,10 @@ QByteArray Settings::serialize() const {
 			<< qint32(_systemUnlockEnabled ? 1 : 0)
 			<< qint32(!_weatherInCelsius ? 0 : *_weatherInCelsius ? 1 : 2)
 			<< _tonsiteStorageToken
-			<< qint32(_includeMutedCounterFolders ? 1 : 0);
+			<< qint32(_includeMutedCounterFolders ? 1 : 0)
+			<< qint32(_ivZoom.current())
+			<< qint32(_skipToastsInFocus ? 1 : 0)
+			<< qint32(_recordVideoMessages ? 1 : 0);
 	}
 
 	Ensures(result.size() == size);
@@ -501,6 +504,9 @@ void Settings::addFromSerialized(const QByteArray &serialized) {
 	qint32 systemUnlockEnabled = _systemUnlockEnabled ? 1 : 0;
 	qint32 weatherInCelsius = !_weatherInCelsius ? 0 : *_weatherInCelsius ? 1 : 2;
 	QByteArray tonsiteStorageToken = _tonsiteStorageToken;
+	qint32 ivZoom = _ivZoom.current();
+	qint32 skipToastsInFocus = _skipToastsInFocus ? 1 : 0;
+	qint32 recordVideoMessages = _recordVideoMessages ? 1 : 0;
 
 	stream >> themesAccentColors;
 	if (!stream.atEnd()) {
@@ -810,6 +816,15 @@ void Settings::addFromSerialized(const QByteArray &serialized) {
 	if (!stream.atEnd()) {
 		stream >> includeMutedCounterFolders;
 	}
+	if (!stream.atEnd()) {
+		stream >> ivZoom;
+	}
+	if (!stream.atEnd()) {
+		stream >> skipToastsInFocus;
+	}
+	if (!stream.atEnd()) {
+		stream >> recordVideoMessages;
+	}
 	if (stream.status() != QDataStream::Ok) {
 		LOG(("App Error: "
 			"Bad data for Core::Settings::constructFromSerialized()"));
@@ -1021,6 +1036,9 @@ void Settings::addFromSerialized(const QByteArray &serialized) {
 		? std::optional<bool>()
 		: (weatherInCelsius == 1);
 	_tonsiteStorageToken = tonsiteStorageToken;
+	_ivZoom = ivZoom;
+	_skipToastsInFocus = (skipToastsInFocus == 1);
+	_recordVideoMessages = (recordVideoMessages == 1);
 }
 
 QString Settings::getSoundPath(const QString &key) const {
@@ -1347,6 +1365,7 @@ void Settings::resetOnLastLogout() {
 	_flashBounceNotify = true;
 	_notifyView = NotifyView::ShowPreview;
 	//_nativeNotifications = std::nullopt;
+	//_skipToastsInFocus = false;
 	//_notificationsCount = 3;
 	//_notificationsCorner = ScreenCorner::BottomRight;
 	_includeMutedCounter = true;
@@ -1408,6 +1427,8 @@ void Settings::resetOnLastLogout() {
 	_hiddenGroupCallTooltips = 0;
 	_storiesClickTooltipHidden = false;
 	_ttlVoiceClickTooltipHidden = false;
+	_ivZoom = 100;
+	_recordVideoMessages = false;
 
 	_recentEmojiPreload.clear();
 	_recentEmoji.clear();
@@ -1463,6 +1484,14 @@ void Settings::setNativeNotifications(bool value) {
 	_nativeNotifications = (value == Platform::Notifications::ByDefault())
 		? std::nullopt
 		: std::make_optional(value);
+}
+
+bool Settings::skipToastsInFocus() const {
+	return _skipToastsInFocus;
+}
+
+void Settings::setSkipToastsInFocus(bool value) {
+	_skipToastsInFocus = value;
 }
 
 void Settings::setTranslateButtonEnabled(bool value) {
@@ -1545,6 +1574,18 @@ void Settings::setRememberedDeleteMessageOnlyForYou(bool value) {
 }
 bool Settings::rememberedDeleteMessageOnlyForYou() const {
 	return _rememberedDeleteMessageOnlyForYou;
+}
+
+int Settings::ivZoom() const {
+	return _ivZoom.current();
+}
+rpl::producer<int> Settings::ivZoomValue() const {
+	return _ivZoom.value();
+}
+void Settings::setIvZoom(int value) {
+	constexpr auto kMin = 30;
+	constexpr auto kMax = 200;
+	_ivZoom = std::clamp(value, kMin, kMax);
 }
 
 } // namespace Core
