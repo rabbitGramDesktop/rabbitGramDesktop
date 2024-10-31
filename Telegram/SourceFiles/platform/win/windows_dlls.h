@@ -16,10 +16,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include <RestartManager.h>
 #include <psapi.h>
 
-#ifdef __MINGW32__
-#define __in
-#endif
-
 namespace Platform {
 namespace Dlls {
 

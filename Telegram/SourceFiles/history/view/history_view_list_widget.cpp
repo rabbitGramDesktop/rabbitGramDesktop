@@ -1185,6 +1185,7 @@ auto ListWidget::collectSelectedItems() const -> SelectedItems {
 		result.canDelete = selection.canDelete;
 		result.canForward = selection.canForward;
 		result.canSendNow = selection.canSendNow;
+		result.canReschedule = selection.canReschedule;
 		return result;
 	};
 	auto items = SelectedItems();
@@ -1319,6 +1320,7 @@ bool ListWidget::addToSelection(
 	iterator->second.canDelete = item->canDelete();
 	iterator->second.canForward = item->allowsForward();
 	iterator->second.canSendNow = item->allowsSendNow();
+	iterator->second.canReschedule = item->allowsReschedule();
 	return true;
 }
 
