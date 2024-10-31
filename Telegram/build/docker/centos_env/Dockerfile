@@ -2,7 +2,7 @@
 {%- set GIT_FREEDESKTOP = GIT ~ "/gitlab-freedesktop-mirrors" -%}
 {%- set GIT_UPDATE_M4 = "git submodule set-url m4 https://gitlab.freedesktop.org/xorg/util/xcb-util-m4 && git config -f .gitmodules submodule.m4.shallow true && git submodule init && git submodule update" -%}
 {%- set QT = "6.8.0" -%}
-{%- set QT_TAG = "v" ~ QT ~ "-rc1" -%}
+{%- set QT_TAG = "v" ~ QT -%}
 {%- set CFLAGS_DEBUG = "$CFLAGS -O0 -fno-lto -U_FORTIFY_SOURCE" -%}
 {%- set LibrariesPath = "/usr/src/Libraries" -%}
 
@@ -473,6 +473,7 @@ RUN git clone -b n12.1.14.0 --depth=1 {{ GIT }}/FFmpeg/nv-codec-headers.git \
 
 FROM builder AS ffmpeg
 COPY --link --from=opus {{ LibrariesPath }}/opus-cache /
+COPY --link --from=openh264 {{ LibrariesPath }}/openh264-cache /
 COPY --link --from=dav1d {{ LibrariesPath }}/dav1d-cache /
 COPY --link --from=libvpx {{ LibrariesPath }}/libvpx-cache /
 COPY --link --from=libXext {{ LibrariesPath }}/libXext-cache /
@@ -493,6 +494,7 @@ RUN git clone -b n6.1.1 --depth=1 {{ GIT }}/FFmpeg/FFmpeg.git \
 		--disable-autodetect \
 		--disable-everything \
 		--enable-libdav1d \
+		--enable-libopenh264 \
 		--enable-libopus \
 		--enable-libvpx \
 		--enable-vaapi \
@@ -587,6 +589,8 @@ RUN git clone -b n6.1.1 --depth=1 {{ GIT }}/FFmpeg/FFmpeg.git \
 		--enable-decoder=wmav1 \
 		--enable-decoder=wmav2 \
 		--enable-decoder=wmavoice \
+		--enable-encoder=aac \
+		--enable-encoder=libopenh264 \
 		--enable-encoder=libopus \
 		--enable-filter=atempo \
 		--enable-parser=aac \
@@ -610,6 +614,7 @@ RUN git clone -b n6.1.1 --depth=1 {{ GIT }}/FFmpeg/FFmpeg.git \
 		--enable-demuxer=mp3 \
 		--enable-demuxer=ogg \
 		--enable-demuxer=wav \
+		--enable-muxer=mp4 \
 		--enable-muxer=ogg \
 		--enable-muxer=opus \
 	&& make -j$(nproc) \

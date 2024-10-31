@@ -22,6 +22,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/text/text_utilities.h"
 #include "ui/dynamic_image.h"
 #include "ui/dynamic_thumbnails.h"
+#include "ui/effects/premium_graphics.h"
 #include "ui/painter.h"
 #include "window/window_session_controller.h"
 #include "styles/style_credits.h"
@@ -39,7 +40,9 @@ GiftButton::GiftButton(
 	QWidget *parent,
 	not_null<GiftButtonDelegate*> delegate)
 : AbstractButton(parent)
-, _delegate(delegate) {
+, _delegate(delegate)
+, _stars(this, true, Ui::Premium::MiniStars::Type::SlowStars) {
+	_stars.setColorOverride(Ui::Premium::CreditsIconGradientStops());
 }
 
 GiftButton::~GiftButton() {
@@ -82,7 +85,7 @@ void GiftButton::setDescriptor(const GiftDescriptor &descriptor) {
 	}, [&](const GiftTypeStars &data) {
 		_price.setMarkedText(
 			st::semiboldTextStyle,
-			_delegate->star().append(QString::number(data.stars)),
+			_delegate->star().append(' ' + QString::number(data.stars)),
 			kMarkupTextOptions,
 			_delegate->textContext());
 		_userpic = !data.userpic
@@ -159,6 +162,8 @@ void GiftButton::setGeometry(QRect inner, QMargins extend) {
 void GiftButton::resizeEvent(QResizeEvent *e) {
 	if (!_button.isEmpty()) {
 		_button.moveLeft((width() - _button.width()) / 2);
+		const auto padding = _button.height() / 2;
+		_stars.setCenter(_button - QMargins(padding, 0, padding, 0));
 	}
 }
 
@@ -253,15 +258,20 @@ void GiftButton::paintEvent(QPaintEvent *e) {
 	p.setFont(font);
 	const auto text = v::match(_descriptor, [&](GiftTypePremium data) {
 		if (data.discountPercent > 0) {
-			p.setBrush(st::attentionBoxButton.textFg);
+			p.setBrush(st::attentionButtonFg);
 			const auto kMinus = QChar(0x2212);
 			return kMinus + QString::number(data.discountPercent) + '%';
 		}
 		return QString();
 	}, [&](const GiftTypeStars &data) {
 		if (const auto count = data.limitedCount) {
-			p.setBrush(st::windowActiveTextFg);
-			return !data.userpic
+			const auto soldOut = !data.userpic && !data.limitedLeft;
+			p.setBrush(soldOut
+				? st::attentionButtonFg
+				: st::windowActiveTextFg);
+			return soldOut
+				? tr::lng_gift_stars_sold_out(tr::now)
+				: !data.userpic
 				? tr::lng_gift_stars_limited(tr::now)
 				: (count == 1)
 				? tr::lng_gift_limited_of_one(tr::now)
@@ -279,6 +289,10 @@ void GiftButton::paintEvent(QPaintEvent *e) {
 		const auto twidth = font->width(text);
 		const auto pos = position + QPoint(singlew - twidth, font->height);
 		p.save();
+		const auto rubberOut = _extend.top();
+		const auto inner = rect().marginsRemoved(_extend);
+		p.setClipRect(inner.marginsAdded(
+			{ rubberOut, rubberOut, rubberOut, rubberOut }));
 		p.translate(pos);
 		p.rotate(45.);
 		p.translate(-pos);
@@ -297,6 +311,13 @@ void GiftButton::paintEvent(QPaintEvent *e) {
 	p.drawRoundedRect(geometry, radius, radius);
 	if (!premium) {
 		p.setOpacity(1.);
+	}
+	{
+		auto clipPath = QPainterPath();
+		clipPath.addRoundedRect(geometry, radius, radius);
+		p.setClipPath(clipPath);
+		_stars.paint(p);
+		p.setClipping(false);
 	}
 
 	if (!_text.isEmpty()) {
