@@ -25,6 +25,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 const QVector<QString> icons{
 	RabbitAssets::DEFAULT_ICON,
 	RabbitAssets::ANGEL_ICON,
+	RabbitAssets::BLACKOUT_ICON,
 	RabbitAssets::COLOR_ICON,
 	RabbitAssets::IMPOSTOR_ICON,
 	RabbitAssets::MATRIX_ICON,

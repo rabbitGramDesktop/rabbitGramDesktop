@@ -3,6 +3,9 @@
         <file alias="art/rabbit/angel/app.png">../../art/rabbit/angel/app.png</file>
         <file alias="art/rabbit/angel/app_preview.png">../../art/rabbit/angel/app_preview.png</file>
         <file alias="art/rabbit/angel/app_icon.ico">../../art/rabbit/angel/app_icon.ico</file>
+        <file alias="art/rabbit/blackout/app.png">../../art/rabbit/blackout/app.png</file>
+        <file alias="art/rabbit/blackout/app_preview.png">../../art/rabbit/blackout/app_preview.png</file>
+        <file alias="art/rabbit/blackout/app_icon.ico">../../art/rabbit/blackout/app_icon.ico</file>
         <file alias="art/rabbit/color/app.png">../../art/rabbit/color/app.png</file>
         <file alias="art/rabbit/color/app_preview.png">../../art/rabbit/color/app_preview.png</file>
         <file alias="art/rabbit/color/app_icon.ico">../../art/rabbit/color/app_icon.ico</file>

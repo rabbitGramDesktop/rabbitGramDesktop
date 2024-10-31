@@ -61,12 +61,12 @@ void RoundnessPreview::paintEvent(QPaintEvent* e) {
     );
 }
 
-StickerSizePreview::StickerSizePreview(QWidget* parent) : RpWidget(parent) {
+ChatPreview::ChatPreview(QWidget* parent) : RpWidget(parent) {
     auto sectionHeight = st::stickerPreviewSize;
     setMinimumSize(st::boxWidth, sectionHeight);
 }
 
-void StickerSizePreview::paintEvent(QPaintEvent* e) {
+void ChatPreview::paintEvent(QPaintEvent* e) {
     Painter p(this);
     PainterHighQualityEnabler hq(p);
 
@@ -78,6 +78,9 @@ void StickerSizePreview::paintEvent(QPaintEvent* e) {
         case 2: return st::bubbleRadiusLarge;
         default: return 0;
         }
+    };
+    auto message_radius = []() -> int {
+        return RabbitSettings::JsonSettings::GetInt("bubble_radius") * st::stickerSpacefillerHeight * 0.04;
     };
 
     p.setPen(Qt::NoPen);
@@ -107,8 +110,8 @@ void StickerSizePreview::paintEvent(QPaintEvent* e) {
             topPadding,
             spacefillerMsgSkeletonWidth,
             st::stickerSpacefillerHeight,
-            st::stickerSpacefillerHeight / 2.,
-            st::stickerSpacefillerHeight / 2.
+            message_radius(),
+            message_radius()
         );
 
         topPadding += st::stickerPreviewMargin + st::stickerSpacefillerHeight;

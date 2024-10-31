@@ -26,7 +26,7 @@ def fetch_version_to_tmp():
         
 def make_version_index():
     global tmp
-    tmp["version_index"] = f"{tmp['version_str']}-{date.today().strftime("%d%m%Y")}{f"-beta" if tmp['version_beta'] else ""}"
+    tmp["version_index"] = f"{tmp['version_str']}-{date.today().strftime('%d%m%Y')}{f'-beta' if tmp['version_beta'] else ''}"
 
 def set_installer_version():
     with open(os.path.join(tmp["script_path"], "Telegram/build/setup.iss"), "r") as f:
@@ -54,13 +54,13 @@ def bundle_portable():
             os.path.join(tmp["script_path"], "out/Release/portable/modules/"))
         
         shutil.make_archive(
-            f"{tmp["script_path"]}/out/Release/releases/rtgdrelease-{tmp["version_index"]}/rtgdportable-x64.{tmp["version_index"]}", 
-            'zip', f"{tmp["script_path"]}/out/Release/portable")
+            f"{tmp['script_path']}/out/Release/releases/rtgdrelease-{tmp['version_index']}/rtgdportable-x64.{tmp['version_index']}", 
+            'zip', f"{tmp['script_path']}/out/Release/portable")
         
 def bundle_installer():
     if config["bundle_installer"]:
         print("Bundling instaler...")
-        os.system(f"iscc {tmp["script_path"]}/Telegram/build/setup.iss")
+        os.system(f"iscc {tmp['script_path']}/Telegram/build/setup.iss")
 
 fetch_version_to_tmp()
 make_version_index()
