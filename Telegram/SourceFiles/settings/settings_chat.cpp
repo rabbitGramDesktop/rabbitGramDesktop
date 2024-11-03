@@ -1559,12 +1559,6 @@ void SetupThemeSettings(
 
 	Ui::AddSubsectionTitle(container, tr::lng_settings_theme_settings());
 
-	AddPeerColorButton(
-		container,
-		controller->uiShow(),
-		controller->session().user(),
-		st::settingsColorButton);
-
 	const auto settings = &Core::App().settings();
 	if (settings->systemDarkMode().has_value()) {
 		auto label = settings->systemDarkModeEnabledValue(
