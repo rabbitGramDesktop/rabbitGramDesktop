@@ -154,6 +154,8 @@ PRIVATE
 
     info/channel_statistics/earn/earn_format.cpp
     info/channel_statistics/earn/earn_format.h
+    info/channel_statistics/earn/earn_icons.cpp
+    info/channel_statistics/earn/earn_icons.h
 
     intro/intro_code_input.cpp
     intro/intro_code_input.h
@@ -367,6 +369,8 @@ PRIVATE
     ui/controls/invite_link_label.h
     ui/controls/peer_list_dummy.cpp
     ui/controls/peer_list_dummy.h
+    ui/controls/round_video_recorder.cpp
+    ui/controls/round_video_recorder.h
     ui/controls/send_as_button.cpp
     ui/controls/send_as_button.h
     ui/controls/send_button.cpp
@@ -501,4 +505,6 @@ PRIVATE
     desktop-app::lib_spellcheck
     desktop-app::lib_stripe
     desktop-app::external_kcoreaddons
+    desktop-app::external_openh264
+    desktop-app::external_webrtc
 )

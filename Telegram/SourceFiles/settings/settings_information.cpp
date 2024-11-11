@@ -31,6 +31,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "core/click_handler_types.h"
 #include "core/core_settings.h"
 #include "chat_helpers/emoji_suggestions_widget.h"
+#include "boxes/peers/edit_peer_color_box.h"
 #include "boxes/add_contact_box.h"
 #include "boxes/premium_limits_box.h"
 #include "boxes/username_box.h"
@@ -365,8 +366,6 @@ void SetupBirthday(
 		not_null<UserData*> self) {
 	const auto session = &self->session();
 
-	Ui::AddSkip(container);
-
 	auto value = rpl::combine(
 		Info::Profile::BirthdayValue(self),
 		tr::lng_settings_birthday_add()
@@ -419,8 +418,6 @@ void SetupPersonalChannel(
 		not_null<Ui::VerticalLayout*> container,
 		not_null<Window::SessionController*> controller,
 		not_null<UserData*> self) {
-	Ui::AddSkip(container);
-
 	auto value = rpl::combine(
 		Info::Profile::PersonalChannelValue(self),
 		tr::lng_settings_channel_add()
@@ -441,9 +438,18 @@ void SetupPersonalChannel(
 		tr::lng_mediaview_copy(tr::now),
 		edit,
 		{ &st::menuIconChannel });
+}
 
+void SetupReplyColor(
+		not_null<Ui::VerticalLayout*> container,
+		not_null<Window::SessionController*> controller) {
 	Ui::AddSkip(container);
-	Ui::AddDivider(container);
+
+	AddPeerColorButton(
+		container,
+		controller->uiShow(),
+		controller->session().user(),
+		st::settingsColorButton);
 }
 
 void SetupRows(
@@ -1047,6 +1053,7 @@ void Information::setupContent(
 	SetupPhoto(content, controller, self);
 	SetupBio(content, self);
 	SetupRows(content, controller, self);
+	SetupReplyColor(content, controller);
 	SetupPersonalChannel(content, controller, self);
 	SetupBirthday(content, controller, self);
 	SetupAccountsWrap(content, controller);

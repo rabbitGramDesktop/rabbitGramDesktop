@@ -17,6 +17,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "styles/style_chat.h"
 #include "styles/style_widgets.h"
 #include "ui/painter.h"
+#include "ui/chat/chat_style_radius.h"
 #include "window/main_window.h"
 
 RoundnessPreview::RoundnessPreview(QWidget* parent) : RpWidget(parent) {
@@ -80,7 +81,7 @@ void ChatPreview::paintEvent(QPaintEvent* e) {
         }
     };
     auto message_radius = []() -> int {
-        return RabbitSettings::JsonSettings::GetInt("bubble_radius") * st::stickerSpacefillerHeight * 0.04;
+        return Ui::BubbleRadiusLarge();
     };
 
     p.setPen(Qt::NoPen);
@@ -136,7 +137,7 @@ void StickerShapePicker::paintEvent(QPaintEvent* e) {
 
     auto variantPadding = st::stickerShapePadding;
     auto variantWidth = variantCardWidth - 2 * variantPadding - 2 * st::stickerShapePenWidth;
-    auto variantHeight = variantCardHeight - 2 * variantPadding - 2 * st::stickerShapePenWidth;
+    auto variantHeight = variantCardHeight - 2 * variantPadding /* - 2 * st::stickerShapePenWidth */;
     
     auto radiuses = [](int index) -> int {
         switch (index) {
