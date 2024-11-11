@@ -1,6 +1,7 @@
 name: MacOS.
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - 'docs/**'
@@ -64,16 +65,12 @@ jobs:
       - name: First set up.
         run: |
           sudo chown -R `whoami`:admin /usr/local/share
-
           brew update
           brew upgrade || true
           brew install automake meson nasm ninja pkg-config
-
           # Disable spotlight.
           sudo mdutil -a -i off
-
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-
       - name: ThirdParty cache.
         id: cache-third-party
         uses: actions/cache@v4
@@ -93,17 +90,14 @@ jobs:
       - name: Libraries.
         run: |
           ./$REPO_NAME/Telegram/build/prepare/mac.sh skip-release silent
-
       - name: Free up some disk space.
         run: |
           cd Libraries
           find . -iname "*.dir" -exec rm -rf {} || true \;
-
       - name: Telegram Desktop build.
         if: env.ONLY_CACHE == 'false'
         run: |
           cd $REPO_NAME/Telegram
-
           DEFINE=""
           if [ -n "${{ matrix.defines }}" ]; then
             DEFINE="-D ${{ matrix.defines }}=ON"
@@ -112,7 +106,6 @@ jobs:
           else
             echo "ARTIFACT_NAME=Telegram" >> $GITHUB_ENV
           fi
-
           ./configure.sh \
           -D CMAKE_C_FLAGS="-Werror" \
           -D CMAKE_CXX_FLAGS="-Werror" \
@@ -121,19 +114,15 @@ jobs:
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF \
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF \
           $DEFINE
-
           cd ../out
-
           xcoderun='xcodebuild build -project Telegram.xcodeproj -scheme Telegram -destination "platform=macOS,arch=x86_64" -configuration Debug'
           bash -c "$xcoderun" || bash -c "$xcoderun" || bash -c "$xcoderun"
-
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
           cd $REPO_NAME/out/Debug
           mkdir artifact
-          mv Telegram.app artifact/
-          mv Updater artifact/
+          mv rabbitGram.app artifact/
       - uses: actions/upload-artifact@v4
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
